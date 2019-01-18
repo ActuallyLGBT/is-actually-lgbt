@@ -1,0 +1,31 @@
+{
+  "name": "actually-lgbt",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc",
+    "next": "next",
+    "exec": "node build/server.js",
+    "dev": "npm run tsc && npm run exec",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.16.0",
+    "@types/next": "^7.0.6",
+    "@types/react": "^16.7.20",
+    "@zeit/next-typescript": "^1.1.1",
+    "express": "^4.16.4",
+    "next": "^7.0.2",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "typescript": "^3.2.4"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
+  }
+}
