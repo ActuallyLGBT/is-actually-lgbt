@@ -5,14 +5,16 @@ import nextapp from "../../nextapp";
 const router = express.Router();
 const handler = nextapp.getRequestHandler();
 
-router.get("/*", (req, res) => {
-  const { pathname, query } = parseUrl(req.url, true);
+router.get("/profiles/:name", (req, res) => {
+  const { name } = req.params;
 
-  if (pathname === "a" || pathname === "b") {
-    nextapp.render(req, res, pathname, query);
-  } else {
-    handler(req, res, parseUrl(req.url, true));
-  }
+  nextapp.render(req, res, "/profile", { userName: name });
+});
+
+router.get("/*", (req, res) => {
+  const parsedUrl = parseUrl(req.url, true);
+
+  handler(req, res, parsedUrl);
 });
 
 export default router;
