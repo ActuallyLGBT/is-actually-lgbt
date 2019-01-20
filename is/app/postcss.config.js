@@ -1,5 +1,6 @@
 module.exports = {
   plugins: {
-    "postcss-preset-env": {}
+    "postcss-mixins": {},
+    "postcss-preset-env": { stage: 0 }
   }
 };

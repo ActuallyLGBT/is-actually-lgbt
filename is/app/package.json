@@ -37,6 +37,7 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "postcss-mixins": "^6.2.1",
     "postcss-preset-env": "^6.5.0",
     "raw-loader": "^1.0.0",
     "ts-node": "^7.0.1"

@@ -1,4 +1,23 @@
-/* Futura PT Heavy
+/*
+Futura PT Medium
+
+font-family: futura-pt, sans-serif;
+
+font-weight: 500;
+
+font-style: normal;
+
+
+Futura PT Medium Oblique
+
+font-family: futura-pt, sans-serif;
+
+font-weight: 500;
+
+font-style: italic;
+
+
+Futura PT Heavy
 
 font-family: futura-pt, sans-serif;
 
@@ -12,6 +31,15 @@ Futura PT Heavy Oblique
 font-family: futura-pt, sans-serif;
 
 font-weight: 700;
+
+font-style: italic;
+
+
+Futura PT Light Oblique
+
+font-family: futura-pt, sans-serif;
+
+font-weight: 300;
 
 font-style: italic;
 
@@ -30,6 +58,51 @@ Futura PT Book Oblique
 font-family: futura-pt, sans-serif;
 
 font-weight: 400;
+
+font-style: italic;
+
+
+Futura PT Light
+
+font-family: futura-pt, sans-serif;
+
+font-weight: 300;
+
+font-style: normal;
+
+
+Futura PT Extra Bold
+
+font-family: futura-pt, sans-serif;
+
+font-weight: 800;
+
+font-style: normal;
+
+
+Futura PT Extra Bold Oblique
+
+font-family: futura-pt, sans-serif;
+
+font-weight: 800;
+
+font-style: italic;
+
+
+Futura PT Demi
+
+font-family: futura-pt, sans-serif;
+
+font-weight: 600;
+
+font-style: normal;
+
+
+Futura PT Demi Oblique
+
+font-family: futura-pt, sans-serif;
+
+font-weight: 600;
 
 font-style: italic;
 
@@ -70,6 +143,24 @@ font-weight: 400;
 font-style: italic;
 
 
+Futura PT Cond Medium
+
+font-family: futura-pt-condensed, sans-serif;
+
+font-weight: 500;
+
+font-style: normal;
+
+
+Futura PT Cond Medium Oblique
+
+font-family: futura-pt-condensed, sans-serif;
+
+font-weight: 500;
+
+font-style: italic;
+
+
 Futura PT Cond Bold
 
 font-family: futura-pt-condensed, sans-serif;
@@ -85,32 +176,57 @@ font-family: futura-pt-condensed, sans-serif;
 
 font-weight: 700;
 
-font-style: italic; */
+font-style: italic;
 
-@custom-media --viewport-small (width <= 500px);
+
+Futura PT Cond Extra Bold
+
+font-family: futura-pt-condensed, sans-serif;
+
+font-weight: 800;
+
+font-style: normal;
+
+
+Futura PT Cond Extra Bold Oblique
+
+font-family: futura-pt-condensed, sans-serif;
+
+font-weight: 800;
+
+font-style: italic;
+*/
+
 @custom-selector :--heading h1, h2, h3, h4, h5, h6;
 
+@define-mixin futura-pt-bold {
+  font-family: futura-pt-bold, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+@define-mixin futura-pt-demi {
+  font-family: futura-pt, sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
 :root {
-  --mainColor: #12345678;
+  --mainColor: #111111;
 }
 
 body {
   color: var(--mainColor);
-  font-family: system-ui;
   overflow-wrap: break-word;
   font-family: "futura-pt", sans-serif;
   font-weight: 400;
   line-height: 1.45;
-
-  @media (--viewport-small) {
-    color: red;
-  }
+  height: 100vh;
 }
 
 :--heading {
   margin: 2.75rem 0 1rem;
-  font-family: "futura-pt", sans-serif;
-  font-weight: 400;
+  @mixin futura-pt-bold;
   line-height: 1.15;
 }
 
@@ -128,6 +244,10 @@ html {
 
 p {
   margin-bottom: 1.25em;
+
+  & strong {
+    @mixin futura-pt-demi;
+  }
 }
 
 h1 {
@@ -154,4 +274,8 @@ h5 {
 small,
 .text_small {
   font-size: 0.8em;
+}
+
+main {
+  margin: 0 0.5rem;
 }

@@ -45,8 +45,10 @@ class Profile extends React.Component<ProfileProps, {}> {
     };
 
     return (
-      <div className={styles.body}>
+      <main>
         <Head>
+          <meta name="viewport" content="width=device-width" />
+
           <link
             rel="stylesheet"
             href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
@@ -57,6 +59,10 @@ class Profile extends React.Component<ProfileProps, {}> {
           <link
             rel="stylesheet"
             href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css"
+          />
+          <link
+            rel="stylesheet"
+            href="//cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css"
           />
         </Head>
         <h1>{this.props.userName} is actually LGBTQQIA.</h1>
@@ -79,7 +85,7 @@ class Profile extends React.Component<ProfileProps, {}> {
           </ul>
         </div>
         <div dangerouslySetInnerHTML={{ __html: md.render(testMd) }} />
-      </div>
+      </main>
     );
   }
 }
