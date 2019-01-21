@@ -3,8 +3,12 @@ import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
 import * as routes from './routes';
+import * as path from 'path'
+import * as db from './db';
 import nextapp from './nextapp';
 import { ApolloServer, gql } from 'apollo-server-express';
+
+const resolve = (str) => path.join('server', str)
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
@@ -130,6 +134,9 @@ const server = new ApolloServer({ typeDefs, resolvers });
 
 const app = express();
 server.applyMiddleware({ app });
+
+db.register(resolve('schema'))
+
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
