@@ -1,9 +1,9 @@
-import * as express from "express";
-import * as bodyParser from "body-parser";
-import * as compression from "compression";
-import * as cookieParser from "cookie-parser";
-import * as routes from "./routes";
-import nextapp from "./nextapp";
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
+import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
+import * as routes from './routes';
+import nextapp from './nextapp';
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
@@ -13,8 +13,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/api", routes.api);
-app.use("/", routes.app);
+app.use('/api', routes.api);
+app.use('/', routes.app);
 
 (async () => {
   try {
