@@ -56,6 +56,8 @@ _This is italic text_
 
 ## Blockquotes
 
+> Creativity is just connecting things. When you ask creative people how they did something, they feel a little guilty because they didn't really do it, they just saw something. It seemed obvious to them after a while. That's because they were able to connect experiences they've had and synthesize new things.
+
 > Blockquotes can also be nested...
 >
 > > ...by using additional greater-than signs right next to each other...
@@ -135,14 +137,14 @@ Right aligned columns
 
 [link text](http://dev.nodeca.com)
 
-[link with title](http://nodeca.github.io/pica/demo/ "title text!")
+[link with title](http://nodeca.github.io/pica/demo/ 'title text!')
 
 Autoconverted link https://github.com/nodeca/pica (enable linkify to see)
 
 ## Images
 
 ![Minion](https://octodex.github.com/images/minion.png)
-![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
+![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg 'The Stormtroopocat')
 
 Like links, Images also have a footnote style syntax
 
@@ -150,7 +152,7 @@ Like links, Images also have a footnote style syntax
 
 With a reference later in the document defining the URL location:
 
-[id]: https://octodex.github.com/images/dojocat.jpg "The Dojocat"
+[id]: https://octodex.github.com/images/dojocat.jpg 'The Dojocat'
 
 ## Plugins
 
@@ -159,9 +161,9 @@ The killer feature of `markdown-it` is very effective support of
 
 ### [Emojies](https://github.com/markdown-it/markdown-it-emoji)
 
-> Classic markup: :wink: :cry: :laughing: :yum: :cloud: :bee:
->
-> Shortcuts (emoticons): :-) :-( 8-) ;)
+Classic markup: :wink: :cry: :laughing: :yum: :cloud: :bee:
+
+Shortcuts (emoticons): :-) :-( 8-) ;)
 
 see [how to change output](https://github.com/markdown-it/markdown-it-emoji#change-output) with twemoji.
 
