@@ -52,7 +52,10 @@ img {
   width: 100%;
 
   &:global(.emoji) {
-    width: 1.2rem;
+    height: 1em;
+    width: 1em;
+    margin: 0 0.05em 0 0.1em;
+    vertical-align: -0.1em;
   }
 }
 
@@ -157,6 +160,40 @@ blockquote {
     font-weight: bold;
     margin-top: 1em;
   }
+}
+
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  display: block;
+  width: 100%;
+  overflow: auto;
+}
+
+td,
+th {
+  padding: 0;
+}
+
+table th {
+  font-weight: 600;
+}
+
+table th,
+table td {
+  padding: 0.375rem 0.8125rem;
+  border: 1px solid #dfe2e5;
+}
+
+table tr {
+  background-color: #fff;
+  border-top: 1px solid #c6cbd1;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f6f8fa;
 }
 
 main {
