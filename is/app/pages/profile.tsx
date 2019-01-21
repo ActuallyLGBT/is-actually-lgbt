@@ -80,37 +80,39 @@ class Profile extends React.Component<ProfileProps, {}> {
                 <span className={styles.letterA}>A</span>
               </span>
             </h1>
-            <span className={styles.pronounLine}>
-              Their pronouns are <span className={styles.pronouns}>They/Them</span>
-            </span>
-            <div className={styles.social}>
-              <span>You can find them here:</span>
-              <ul className={styles.socialLinks}>
-                <li>
-                  <i className="fab fa-twitter" />
-                </li>
-                <li>
-                  <i className="fab fa-instagram" />
-                </li>
-                <li>
-                  <i className="fab fa-twitch" />
-                </li>
-                <li>
-                  <i className="fab fa-github" />
-                </li>
-                <li>
-                  <i className="fab fa-youtube" />
-                </li>
-                <li>
-                  <i className="fab fa-tumblr" />
-                </li>
-                <li>
-                  <i className="fab fa-snapchat" />
-                </li>
-                <li>
-                  <i className="fa fa-link" />
-                </li>
-              </ul>
+            <div className={styles.details}>
+              <span className={styles.pronounLine}>
+                Their pronouns are <span className={styles.pronouns}>They/Them</span>
+              </span>
+              <div className={styles.social}>
+                <span>You can find them here:</span>
+                <ul className={styles.socialLinks}>
+                  <li>
+                    <i className="fab fa-twitter" />
+                  </li>
+                  <li>
+                    <i className="fab fa-instagram" />
+                  </li>
+                  <li>
+                    <i className="fab fa-twitch" />
+                  </li>
+                  <li>
+                    <i className="fab fa-github" />
+                  </li>
+                  <li>
+                    <i className="fab fa-youtube" />
+                  </li>
+                  <li>
+                    <i className="fab fa-tumblr" />
+                  </li>
+                  <li>
+                    <i className="fab fa-snapchat" />
+                  </li>
+                  <li>
+                    <i className="fa fa-link" />
+                  </li>
+                </ul>
+              </div>
             </div>
           </header>
           <div dangerouslySetInnerHTML={{ __html: md.render(testMd) }} />
