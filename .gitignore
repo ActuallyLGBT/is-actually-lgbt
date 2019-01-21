@@ -123,3 +123,6 @@ typings/
 # Ignore all local history of files
 .history
 
+
+*.sublime-workspace
+*.sublime-project
