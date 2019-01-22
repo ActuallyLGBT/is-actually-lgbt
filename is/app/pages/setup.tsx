@@ -4,12 +4,16 @@ import MainLayout from '../components/layout/MainLayout';
 import Wizard from '../components/Wizard/Wizard';
 
 class Setup extends React.Component {
-  render(): JSX.Element {
+  isNameAvailable(name: string) {
+    return !!name;
+  }
+
+  render(): React.ReactNode {
     return (
       <MainLayout>
         <Wizard>
           <Wizard.Page>
-            {(nextStep, prevStep, submitForm) => (
+            {(nextStep, prevStep) => (
               <div>
                 <h1>Step 1!</h1>
                 <button onClick={prevStep}>Previous</button>
@@ -18,7 +22,7 @@ class Setup extends React.Component {
             )}
           </Wizard.Page>
           <Wizard.Page>
-            {(nextStep, prevStep, submitForm) => (
+            {(nextStep, prevStep) => (
               <div>
                 <h1>Step 2!</h1>
                 <button onClick={prevStep}>Previous</button>
@@ -27,7 +31,7 @@ class Setup extends React.Component {
             )}
           </Wizard.Page>
           <Wizard.Page>
-            {(nextStep, prevStep, submitForm) => (
+            {(nextStep, prevStep) => (
               <div>
                 <h1>Step 3!</h1>
                 <button onClick={prevStep}>Previous</button>
