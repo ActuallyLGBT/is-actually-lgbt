@@ -1,13 +1,15 @@
 import React from 'react';
 
 interface PageChild {
-  (nextStep: Function, prevStep: Function, submitForm: Function): JSX.Element;
+  (
+    nextStep: React.FormEventHandler<HTMLElement>,
+    prevStep: React.FormEventHandler<HTMLElement>
+  ): JSX.Element;
 }
 
 interface PageProps {
-  nextStep?: Function;
-  prevStep?: Function;
-  submitForm?: Function;
+  nextStep?: React.FormEventHandler<HTMLElement>;
+  prevStep?: React.FormEventHandler<HTMLElement>;
   children?: PageChild;
 }
 
@@ -22,14 +24,13 @@ interface WizardState {
 }
 
 class Wizard extends React.Component<WizardProps, WizardState> {
-  static Page = ({ children, nextStep, prevStep, submitForm }: PageProps) =>
-    children(nextStep, prevStep, submitForm);
+  static Page = ({ children, nextStep, prevStep }: PageProps) => children(nextStep, prevStep);
 
   state = {
     currentPage: 0
   };
 
-  nextStep = () => {
+  nextStep = (): void => {
     const { children } = this.props;
     const { currentPage } = this.state;
 
@@ -38,7 +39,7 @@ class Wizard extends React.Component<WizardProps, WizardState> {
     }
   };
 
-  prevStep = () => {
+  prevStep = (): void => {
     const { currentPage } = this.state;
 
     if (currentPage !== 0) {
@@ -46,13 +47,10 @@ class Wizard extends React.Component<WizardProps, WizardState> {
     }
   };
 
-  submitForm = () => {};
-
-  renderStep(step: PageType) {
+  renderStep(step: PageType): React.ReactNode {
     return React.cloneElement(step, {
       nextStep: this.nextStep,
-      prevStep: this.prevStep,
-      submitForm: this.submitForm
+      prevStep: this.prevStep
     });
   }
 
