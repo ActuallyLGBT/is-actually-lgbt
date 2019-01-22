@@ -34,7 +34,8 @@
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "twemoji": "^11.2.0",
-    "typescript": "^3.2.4"
+    "typescript": "^3.2.4",
+    "weak-key": "^1.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
