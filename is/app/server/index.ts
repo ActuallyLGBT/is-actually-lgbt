@@ -13,40 +13,115 @@ interface ValidNameData {
   slug: String;
 }
 
-// Construct a schema, using GraphQL schema language
+interface PronounData {
+  objective: String[];
+  subjective: String[];
+}
+
+interface LinkType {
+  name: String;
+  icon: String;
+  attribute: String;
+  template: String;
+}
+
 const typeDefs = gql`
-  type ValidNameData {
-    available: Boolean
-    slug: String
+  input UserData {
+    userId: String!
   }
 
-  # type PronounData {
-  #   objective: [String]
-  #   subjective: [String]
-  # }
+  input PageInput {
+    name: String
+    email: String
+    letters: [String]
+    socialLinks: [LinkData]
+    pronounSub: String
+    pronounObj: String
+  }
 
-  # type LinkType {
-  #   name: String
-  #   icon: String
-  #   attribute: String
-  #   template: String
-  # }
+  input LinkData {
+    linkTypeId: String!
+    value: String!
+  }
+
+  type PageData {
+    pageId: String
+    name: String
+    email: String
+    letters: [String]
+    socialLinks: [Link]
+    pronounSub: String
+    pronounObj: String
+  }
+
+  type ValidNameData {
+    available: Boolean!
+    slug: String!
+  }
+
+  type Link {
+    linkTypeId: String!
+    value: String!
+  }
+
+  type PronounData {
+    objective: [String]!
+    subjective: [String]!
+  }
+
+  type LinkType {
+    typeId: String!
+    name: String!
+    icon: String!
+    attribute: String!
+    template: String!
+  }
 
   type Query {
     validateName(name: String!): ValidNameData
-    # getPronounList: [PronounData]
-    # getLinkTypes: [LinkType]
+    getPronounList: PronounData
+    getLinkTypes: [LinkType]
+  }
+
+  type Mutation {
+    createPage(user: UserData!, page: PageInput!): PageData
   }
 `;
 
-// Provide resolver functions for your schema fields
 const resolvers = {
+  Mutation: {
+    createPage(_, args) {
+      return { pageId: '123abc', ...args.page };
+    }
+  },
   Query: {
     validateName(_, args): ValidNameData {
       return {
         available: true,
         slug: args.name
       };
+    },
+    getPronounList(): PronounData {
+      return {
+        objective: ['He', 'She', 'They'],
+        subjective: ['Him', 'Her', 'Them']
+      };
+    },
+    getLinkTypes(): LinkType[] {
+      return [
+        {
+          name: 'GitHub',
+          icon: 'fab fa-github',
+          attribute: 'username',
+          template: 'https://github.com/{username}'
+        },
+        {
+          name: 'Twitter',
+          icon: 'fab fa-twitter',
+          attribute: 'username',
+          template: 'https://twitter.com/{username}'
+        }
+      ];
     }
   }
 };
