@@ -7,17 +7,17 @@ import { Utils, Collection } from '../utils'
 
 Mongoose.Promise = Promise
 
-class MongooseConnector extends Collection {
+export class MongoosePlugin extends Collection {
 
-  config: object
+  config: any
 
-  constructor (options = { mongo: {} }) {
+  constructor (_, options = { mongo: { uri: '' } }) {
     super()
 
     this.config = options.mongo
   }
 
-  get mongoose(): Object {
+  get mongoose (): Object {
     return Mongoose
   }
 
@@ -97,23 +97,23 @@ class MongooseConnector extends Collection {
     this.set(name, model)
 
     this[name] = model
-
-    /**
-     * Fires when a schema is registered
-     *
-     * @event Navi#mongoose:registered
-     * @type {Object}
-     * @prop {String} name Schema name
-     * @prop {Number} count Number of loaded schemas
-     */
-    // this._client.emit('mongoose:registered', {
-    //   name,
-    //   count: this.size
-    // })
+    console.log(`Schema Loaded: ${name}`)
     return this
   }
 
-  run () {}
-}
+  run () {
+    return new Promise((resolve, _) => {
+      Mongoose.connection.once('open', () => {
+        console.log('Mongoose Connected')
+        resolve()
+      })
 
-export default MongooseConnector
+      Mongoose.connect(this.config.uri, { useNewUrlParser: true }, err => {
+        if (err) {
+          console.error(err)
+          throw err
+        }
+      })
+    })
+  }
+}

@@ -1,32 +1,8 @@
-import * as path from 'path'
-import * as fs from 'fs'
-
-class Utils {
-  static isDir (fname) {
-    return fs.existsSync(fname) ? fs.statSync(fname).isDirectory() : false
-  }
-
-  /**
-   * Reads a directory recursively and returns an object mapping the required files to the folder
-   * @arg {String} dir Directory path
-   * @returns {Object}
-   */
-  static requireAll (dir) {
-    return fs.readdirSync(dir).reduce((obj, file) => {
-      if (file.startsWith('.')) return obj
-      const filepath = path.join(dir, file)
-      obj[file.substring(0, path.basename(filepath, path.extname(filepath)).length)] = Utils.isDir(filepath)
-      ? Utils.requireAll(filepath) : require(filepath)
-      return obj
-    }, {})
-  }
-}
-
 /**
  * An extended map with utility functions
  * @extends Map
  */
-class Collection extends Map {
+export class Collection extends Map {
   /**
    * Returns all items in the collection as an array
    * @returns {Array} Array of values
@@ -114,6 +90,3 @@ class Collection extends Map {
     return [...new Set(this.toArray())]
   }
 }
-
-export { Utils }
-export { Collection }
