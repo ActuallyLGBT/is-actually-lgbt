@@ -1,11 +1,3 @@
-@import 'css-modularscale';
-
-@import './base/mixins.css';
-@import './base/colors.css';
-@import './base/media.css';
-@import './global/core.css';
-@import './base/document.css';
-
 @custom-selector :--letters
   .letterL,
   .letterG,
