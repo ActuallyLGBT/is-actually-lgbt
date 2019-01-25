@@ -2,9 +2,10 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
-import * as routes from './routes';
 import * as path from 'path'
 import * as Promise from 'bluebird';
+import * as R from 'ramda';
+import * as routes from './routes';
 import nextapp from './nextapp';
 import { ApolloServer, gql } from 'apollo-server-express';
 import { Collection } from './utils'
@@ -106,26 +107,23 @@ const resolvers = {
         .then(ret => { return { available: ret, slug: args.name } })
     },
     getPronounList(): PronounData {
-      return {
-        objective: ['He', 'She', 'They'],
-        subjective: ['Him', 'Her', 'Them']
-      };
+      return server.api.getPronounList()
+        .then(ret => {
+          for (const key in ret) {
+            ret[key] = R.pluck('text', ret[key])
+          }
+          return ret
+        })
     },
     getLinkTypes(): LinkType[] {
-      return [
-        {
-          name: 'GitHub',
-          icon: 'fab fa-github',
-          attribute: 'username',
-          template: 'https://github.com/{username}'
-        },
-        {
-          name: 'Twitter',
-          icon: 'fab fa-twitter',
-          attribute: 'username',
-          template: 'https://twitter.com/{username}'
-        }
-      ];
+      return server.api.getLinkTypes()
+        .then(R.project([
+            'typeId',
+            'name',
+            'icon',
+            'attribute',
+            'template'
+          ]))
     }
   }
 };
