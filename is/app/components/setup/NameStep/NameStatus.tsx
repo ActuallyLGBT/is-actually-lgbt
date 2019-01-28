@@ -38,15 +38,8 @@ type InputProps = {
 type ChildProps = ChildDataProps<InputProps, Response, Variables>;
 
 function NameStatus({ available, slug, name }: ChildProps) {
-  const validNameRegex = new RegExp(/^[^!-@[-`{-~][^!-+/-@[-`{-~]*$/, 'gi');
-
   if (!name) {
     return <div className={styles.nameStatus} />;
-  }
-
-  if (!validNameRegex.test(name)) {
-    console.log('tick');
-    throw new Error('Invalid name string');
   }
 
   return (

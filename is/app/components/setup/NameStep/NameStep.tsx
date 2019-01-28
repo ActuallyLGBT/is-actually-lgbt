@@ -11,8 +11,9 @@ interface NameStepProps {
 }
 
 interface NextStepState {
-  nameValue: String;
-  query: String;
+  nameValue: string;
+  query: string;
+  hasError: boolean;
 }
 
 class NameStep extends React.Component<NameStepProps, NextStepState> {
@@ -24,16 +25,17 @@ class NameStep extends React.Component<NameStepProps, NextStepState> {
 
   onNameChange = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
+    const validNameRegex = new RegExp(/^[^!-@[-`{-~][^!-+/-@[-`{-~]*$/, 'gi');
     this.setState({ nameValue: value }, () => {
-      console.log('callback: ', value);
-      this.debounceSetQuery(value);
+      if (validNameRegex.test(value)) {
+        this.debounceSetQuery(value);
+      } else {
+        this.setState({ hasError: true });
+      }
     });
   };
 
-  setQuery = query => {
-    console.log('query: ', query);
-    this.setState({ query });
-  };
+  setQuery = query => this.setState({ query });
 
   debounceSetQuery = debounce(400, this.setQuery);
 
@@ -42,19 +44,12 @@ class NameStep extends React.Component<NameStepProps, NextStepState> {
     this.props.nextStep(event);
   };
 
-  static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI.
-    console.log(error);
-    return { hasError: true };
-  }
-
   render(): React.ReactNode {
     const { nameValue, query } = this.state;
+
     if (this.state.hasError) {
-      console.log('error');
       return <h2>Oh shit</h2>;
     }
-    console.log('bonko');
     return (
       <div className={styles.nameStep}>
         <form onSubmit={this.onSubmit}>
