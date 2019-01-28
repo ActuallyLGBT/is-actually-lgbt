@@ -1,4 +1,5 @@
 import React from 'react';
+import cn from 'classnames';
 
 interface PageChild {
   (
@@ -17,6 +18,7 @@ type PageType = React.ReactElement<PageProps>;
 
 interface WizardProps {
   children?: PageType[];
+  className?: string;
 }
 
 interface WizardState {
@@ -55,14 +57,14 @@ class Wizard extends React.Component<WizardProps, WizardState> {
   }
 
   render(): React.ReactNode {
-    const { children: steps } = this.props;
+    const { children: steps, className } = this.props;
     const { currentPage } = this.state;
 
     if (steps.length < 2) {
       throw new Error('Two or more steps required');
     }
 
-    return <div>{this.renderStep(steps[currentPage])}</div>;
+    return <div className={className}>{this.renderStep(steps[currentPage])}</div>;
   }
 }
 

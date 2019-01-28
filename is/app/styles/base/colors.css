@@ -13,5 +13,11 @@
   --color-gray: #6c757d;
   --color-gray-light: #c1cdda;
   --color-gray-dark: #343a40;
-  --color-black: #333333;
+  --color-real-black: #333333;
+
+  /* Our Colors */
+  --color-bluebird: #66ccff;
+  --color-black: #2d3436;
+  --color-matte-yellow: #ffe666;
+  --color-mega-pink: #ff6680;
 }

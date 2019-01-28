@@ -1,0 +1,69 @@
+.nameStep {
+  grid-column-start: 2;
+  grid-row-start: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+
+  & .claimButton {
+    background: var(--color-bluebird);
+    color: var(--color-white);
+    border: 1px solid var(--color-white);
+    padding: 0.5em 1em;
+    text-align: center;
+    border-radius: 8px;
+    font-size: 2em;
+  }
+
+  & .nameStatus {
+    display: flex;
+    flex-flow: column;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 300ms linear;
+
+    & p {
+      font-size: 1.5em;
+    }
+
+    &.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    &.available {
+      color: var(--color-bluebird);
+    }
+
+    &.unavailable {
+      color: var(--color-mega-pink);
+    }
+  }
+
+  & form {
+    & fieldset {
+      display: flex;
+      flex-flow: column;
+      border: none;
+      padding: 0;
+      font-size: 2em;
+
+      & label {
+        @mixin futura-pt-demi;
+        font-size: 1.2em;
+      }
+
+      & input {
+        font-size: 1.2em;
+        padding: 0.5em 0.3em;
+        border-radius: 8px;
+        border: 1px solid var(--color-black);
+
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+  }
+}
