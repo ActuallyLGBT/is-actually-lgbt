@@ -2,16 +2,15 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
-import * as path from 'path'
+// import * as path from 'path'
 import * as Promise from 'bluebird';
 import * as R from 'ramda';
 import * as routes from './routes';
 import nextapp from './nextapp';
 import { ApolloServer, gql } from 'apollo-server-express';
-import { Collection } from './utils'
-import { APIPlugin, MongoosePlugin } from './plugins'
-
-const resolve = (str) => path.join('server', str)
+import { ApiManager, PageApiSpec } from './api'
+import DbManager from './db'
+import { IServer, IApiManager, IDbManager } from './lib'
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
@@ -102,8 +101,8 @@ const resolvers = {
     }
   },
   Query: {
-    validateName(_, args): ValidNameData {
-      return server.api.validateName(args)
+    validateName(_, args): Promise<ValidNameData> {
+      return server.api.get<PageApiSpec>().validateName(args.name)
         .then(ret => { return { available: ret, slug: args.name } })
     },
     getPronounList(): PronounData {
@@ -128,88 +127,29 @@ const resolvers = {
   }
 };
 
-let EventEmitter;
-try {
-    EventEmitter = require("eventemitter3");
-} catch(err) {
-    EventEmitter = require("events").EventEmitter;
-}
+class Server implements IServer {
 
-class Server extends EventEmitter{
-
-  plugins: Collection
+  _api: ApiManager
+  _db: DbManager
 
   constructor () {
-    super()
-
     let options = {
       mongo: {
         uri: 'mongodb://localhost/is_actually'
       }
     }
 
-    this.plugins = new Collection()
-
-    this
-      .createPlugin('api', APIPlugin, options)
-      .createPlugin('db', MongoosePlugin, options)
-
-    this
-      .register('api', resolve('api'))
-      .register('db', resolve('schemas'))
+    this._api = new ApiManager(this)
+    this._db = new DbManager(this)
 
   }
 
-  get api (): any {
-    return this.plugins.get('api')
+  get api (): IApiManager {
+    return this._api
   }
 
-  get db (): any {
-    return this.plugins.get('db')
-  }
-
-  /**
-   * Creates a plugin
-   * @arg {String} type The type of plugin
-   * @arg {Plugin} Plugin Plugin class
-   * @arg {Object} [options] Additional plugin options
-   * @returns {Client}
-   */
-  createPlugin (type: string, Plugin: any, options: object): Server {
-    const plugin = new Plugin(this, options)
-    this.plugins.set(type, plugin)
-    return this
-  }
-
-  register (type: string, ...args): Server {
-    if (typeof type !== 'string') {
-      throw new Error('Invalid type supplied to register')
-    }
-    const plugin = this.plugins.get(type)
-    if (!plugin) {
-      throw new Error(`Plugin type ${type} not found`)
-    }
-    if (typeof plugin.register === 'function') plugin.register(...args)
-    return this
-  }
-
-  /**
-   * Unregisters plugins
-   * @arg {String} type The type of plugin<br />
-   * Defaults: `commands`, `listeners`, `middleware`, `resolvers`, `ipc`
-   * @arg {...*} args Arguments supplied to the plugin
-   * @returns {Client}
-   */
-  unregister (type: string, ...args): Server {
-    if (typeof type !== 'string') {
-      throw new Error('Invalid type supplied to register')
-    }
-    const plugin = this.plugins.get(type)
-    if (!plugin) {
-      throw new Error(`Plugin type ${type} not found`)
-    }
-    if (typeof plugin.unregister === 'function') plugin.unregister(...args)
-    return this
+  get db (): IDbManager {
+    return this._db
   }
 
   /**
@@ -221,8 +161,6 @@ class Server extends EventEmitter{
       if (typeof plugin.run === 'function') {
         return plugin.run()
       }
-
-      return Promise.resolve()
     }).then(() => {
       const gqlServer = new ApolloServer({ typeDefs, resolvers });
 

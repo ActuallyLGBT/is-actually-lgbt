@@ -1,9 +1,10 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import * as util from 'util'
-import { Collection, Utils } from '../utils'
+import { TypedCollection, Utils } from '../utils'
+import { IApiSpec, IPlugin } from '../lib'
 
-export class APIPlugin extends Collection {
+export class APIPlugin extends TypedCollection<string, ?> implements IPlugin {
 
   _server: any
 
@@ -12,7 +13,7 @@ export class APIPlugin extends Collection {
     this._server = server
   }
 
-  register (apis) {
+  register (api: APISpec) {
     switch (typeof apis) {
       case 'string': {
         const filepath = path.join(process.cwd(), apis)
@@ -65,7 +66,7 @@ export class APIPlugin extends Collection {
       return this
     }
 
-    let api = typeof API.func === 'function' ? API.func(this._server) : API.func
+    let api = typeof API === 'function' ? new API(this._server) : API
 
     this.set(name, api)
 
