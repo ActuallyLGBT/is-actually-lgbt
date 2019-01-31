@@ -1,6 +1,6 @@
-import { Schema } from "mongoose"
+import { Schema } from 'mongoose'
 
-module.exports = {
+const PageSpec = {
   name: 'Page',
 
   schema: {
@@ -47,3 +47,5 @@ module.exports = {
     }
   }
 }
+
+export { PageSpec }

@@ -2,15 +2,13 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
-// import * as path from 'path'
 import * as Promise from 'bluebird';
 import * as R from 'ramda';
 import * as routes from './routes';
 import nextapp from './nextapp';
 import { ApolloServer, gql } from 'apollo-server-express';
-import { ApiManager, PageApiSpec } from './api'
 import DbManager from './db'
-import { IServer, IApiManager, IDbManager } from './lib'
+import { IServer, IDbManager } from './lib'
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
@@ -102,12 +100,35 @@ const resolvers = {
   },
   Query: {
     validateName(_, args): Promise<ValidNameData> {
-      return server.api.get<PageApiSpec>().validateName(args.name)
-        .then(ret => { return { available: ret, slug: args.name } })
+      return server.db.get('Page').findOne({pageId: args.name})
+      .then(dbItem => {
+        return {
+          available: dbItem ? false : true,
+          slug: args.name
+        }
+      })
     },
     getPronounList(): PronounData {
-      return server.api.getPronounList()
+      return server.db.get('Pronoun').find()
         .then(ret => {
+          if (!ret.length) {
+            return {
+              objective: [],
+              subjective: []
+            }
+          }
+          let items = R.groupBy(R.prop('pronounType'), ret)
+
+          if (!items['objective']) {
+            items['objective'] = []
+          }
+
+          if (!items['subjective']) {
+            items['subjective'] = []
+          }
+
+          return items
+        }).then(ret => {
           for (const key in ret) {
             ret[key] = R.pluck('text', ret[key])
           }
@@ -115,21 +136,23 @@ const resolvers = {
         })
     },
     getLinkTypes(): LinkType[] {
-      return server.api.getLinkTypes()
+      return server.db.get('LinkType').find()
+        .then(ret => { return !ret.length ? [] : ret })
         .then(R.project([
             'typeId',
             'name',
             'icon',
             'attribute',
             'template'
-          ]))
+          ])
+        )
     }
   }
 };
 
 class Server implements IServer {
 
-  _api: ApiManager
+  // _api: ApiManager
   _db: DbManager
 
   constructor () {
@@ -139,13 +162,8 @@ class Server implements IServer {
       }
     }
 
-    this._api = new ApiManager(this)
-    this._db = new DbManager(this)
+    this._db = new DbManager(this, options)
 
-  }
-
-  get api (): IApiManager {
-    return this._api
   }
 
   get db (): IDbManager {
@@ -156,37 +174,33 @@ class Server implements IServer {
    * Runs the server
    * @returns {Promise}
    */
-  async run () {
-    return Promise.each(this.plugins.toArray(), plugin => {
-      if (typeof plugin.run === 'function') {
-        return plugin.run()
-      }
-    }).then(() => {
-      const gqlServer = new ApolloServer({ typeDefs, resolvers });
+  run (): Promise<any> {
+    return this.db.run()
+      .then(() => {
+        const gqlServer = new ApolloServer({ typeDefs, resolvers });
 
-      const app = express();
-      gqlServer.applyMiddleware({ app });
+        const app = express();
+        gqlServer.applyMiddleware({ app });
 
-      app.use(compression());
-      app.use(bodyParser.json());
-      app.use(bodyParser.urlencoded({ extended: true }));
-      app.use(cookieParser());
+        app.use(compression());
+        app.use(bodyParser.json());
+        app.use(bodyParser.urlencoded({ extended: true }));
+        app.use(cookieParser());
 
-      app.use('/api', routes.api);
-      app.use('/', routes.app);
+        app.use('/api', routes.api);
+        app.use('/', routes.app);
 
-      (async () => {
-        try {
-          await nextapp.prepare();
-          app.listen(port);
-          console.log(`🚀 Server ready at http://localhost:${port}${gqlServer.graphqlPath}`);
-        } catch (err) {
-          console.error(err.message);
-        }
-      })();
-    })
+        return nextapp.prepare()
+          .then(() => {
+            app.listen(port);
+            console.log(`🚀 Server ready at http://localhost:${port}${gqlServer.graphqlPath}`);
+          })
+      })
   }
 }
 
 const server = new Server()
-server.run()
+
+server.run().catch(err => {
+  console.error(err)
+})
