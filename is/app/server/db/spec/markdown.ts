@@ -1,4 +1,4 @@
-module.exports = {
+const MarkdownSpec = {
   name: 'Markdown',
 
   schema: {
@@ -22,3 +22,5 @@ module.exports = {
     }
   }
 }
+
+export { MarkdownSpec }
