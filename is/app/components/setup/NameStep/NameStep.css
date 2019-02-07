@@ -1,10 +1,12 @@
 .nameStep {
-  grid-column-start: 2;
+  grid-column-start: 1;
   grid-row-start: 2;
+  grid-column-end: 4;
   display: flex;
+  flex-flow: column;
   justify-content: center;
   align-items: center;
-  flex-flow: column;
+  margin-top: 3em;
 
   & .claimButton {
     background: var(--color-bluebird);
@@ -22,6 +24,7 @@
     visibility: hidden;
     opacity: 0;
     transition: opacity 300ms linear;
+    min-height: calc(calc(160 / 16) * 1em);
 
     & p {
       font-size: 1.5em;
@@ -42,28 +45,6 @@
   }
 
   & form {
-    & fieldset {
-      display: flex;
-      flex-flow: column;
-      border: none;
-      padding: 0;
-      font-size: 2em;
-
-      & label {
-        @mixin futura-pt-demi;
-        font-size: 1.2em;
-      }
-
-      & input {
-        font-size: 1.2em;
-        padding: 0.5em 0.3em;
-        border-radius: 8px;
-        border: 1px solid var(--color-black);
-
-        &:focus {
-          outline: none;
-        }
-      }
-    }
+    font-size: 1.7em;
   }
 }

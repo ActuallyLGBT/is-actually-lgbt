@@ -10,7 +10,7 @@ import cn from 'classnames';
 
 import MainLayout from '../components/layout/MainLayout';
 
-const styles = require('../styles/profile.css');
+const styles = require('./styles/profile.css');
 const testMd = require('../test.md');
 
 export interface ProfileProps {

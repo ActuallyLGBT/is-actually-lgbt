@@ -6,17 +6,17 @@ import NameStatus from './NameStatus';
 const styles = require('./NameStep.css');
 
 interface NameStepProps {
-  nextStep: React.FormEventHandler<HTMLElement>;
+  nextStep: (newState: object) => void;
   prevStep: React.FormEventHandler<HTMLElement>;
 }
 
-interface NextStepState {
+interface NameStepState {
   nameValue: string;
   query: string;
   hasError: boolean;
 }
 
-class NameStep extends React.Component<NameStepProps, NextStepState> {
+class NameStep extends React.Component<NameStepProps, NameStepState> {
   state = {
     nameValue: '',
     query: '',
@@ -41,9 +41,8 @@ class NameStep extends React.Component<NameStepProps, NextStepState> {
 
   debounceSetQuery = debounce(400, this.setQuery);
 
-  onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    // For later
-    this.props.nextStep(event);
+  onClaim = (slug: string) => {
+    this.props.nextStep({ slug });
   };
 
   render(): React.ReactNode {
@@ -51,13 +50,13 @@ class NameStep extends React.Component<NameStepProps, NextStepState> {
 
     return (
       <div className={styles.nameStep}>
-        <form onSubmit={this.onSubmit}>
+        <form>
           <fieldset>
             <label htmlFor="name">What's your name?</label>
             <input onChange={this.onNameChange} name="name" value={nameValue} />
           </fieldset>
         </form>
-        {hasError ? <p>Pls no</p> : <NameStatus name={query} />}
+        <NameStatus name={query} hasError={hasError} onClaim={this.onClaim} />
       </div>
     );
   }
