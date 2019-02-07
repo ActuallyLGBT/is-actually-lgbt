@@ -1,4 +1,4 @@
-module.exports = {
+const LinkTypeSpec = {
   name: 'LinkType',
 
   schema: {
@@ -25,3 +25,5 @@ module.exports = {
     },
   }
 }
+
+export { LinkTypeSpec }

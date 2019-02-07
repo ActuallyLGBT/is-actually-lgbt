@@ -1,4 +1,4 @@
-module.exports = {
+const PronounSpec = {
   name: 'Pronoun',
 
   schema: {
@@ -13,3 +13,5 @@ module.exports = {
     }
   }
 }
+
+export { PronounSpec }

@@ -2,12 +2,12 @@
  * An extended map with utility functions
  * @extends Map
  */
-export class Collection extends Map {
+class TypedCollection<K, V> extends Map<K,V> {
   /**
    * Returns all items in the collection as an array
    * @returns {Array} Array of values
    */
-  toArray () {
+  toArray (): V[] {
     return [...this.values()]
   }
 
@@ -33,7 +33,7 @@ export class Collection extends Map {
    * @arg {function} func find function
    * @returns {*} Value that was found
    */
-  find (args) {
+  find (args: (item: V) => boolean): V {
     return this.toArray().find(args)
   }
 
@@ -42,7 +42,7 @@ export class Collection extends Map {
    * @arg {function} func map function
    * @returns {Array} Array of mapped values
    */
-  map (args) {
+  map (args: (item: V) => V): V[] {
     return this.toArray().map(args)
   }
 
@@ -60,7 +60,7 @@ export class Collection extends Map {
    * @arg {String} key The matching key
    * @returns {Array} Array of keyed values
    */
-  pluck (key) {
+  pluck (key: string): V[] {
     return this.toArray().reduce((i, o) => {
       if (!o[key]) return i
       i.push(o[key])
@@ -90,3 +90,7 @@ export class Collection extends Map {
     return [...new Set(this.toArray())]
   }
 }
+
+class Collection extends TypedCollection<any, any> {}
+
+export { TypedCollection, Collection }

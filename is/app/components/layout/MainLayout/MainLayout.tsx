@@ -1,5 +1,13 @@
 import React from 'react';
 import Head from 'next/head';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from 'react-apollo';
+import { fetch } from 'apollo-env';
+
+const client = new ApolloClient({
+  uri: '/graphql',
+  fetch // ¯\_(ツ)_/¯
+});
 
 require('./MainLayout.css');
 
@@ -26,7 +34,7 @@ function MainLayout(props: MainLayoutProps): JSX.Element {
         />
         <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css" />
       </Head>
-      {props.children}
+      <ApolloProvider client={client}>{props.children}</ApolloProvider>
     </main>
   );
 }
