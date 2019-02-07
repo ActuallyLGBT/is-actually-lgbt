@@ -1,10 +1,14 @@
 import React from 'react';
-import cn from 'classnames';
+
+export interface WizardState {
+  [key: string]: any;
+}
 
 interface PageChild {
   (
     nextStep: React.FormEventHandler<HTMLElement>,
-    prevStep: React.FormEventHandler<HTMLElement>
+    prevStep: React.FormEventHandler<HTMLElement>,
+    wizardState: WizardState
   ): JSX.Element;
 }
 
@@ -12,6 +16,7 @@ interface PageProps {
   nextStep?: React.FormEventHandler<HTMLElement>;
   prevStep?: React.FormEventHandler<HTMLElement>;
   children?: PageChild;
+  wizardState?: WizardState;
 }
 
 type PageType = React.ReactElement<PageProps>;
@@ -21,23 +26,26 @@ interface WizardProps {
   className?: string;
 }
 
-interface WizardState {
+interface WizardReactState {
   currentPage: number;
+  wizardState: WizardState;
 }
 
-class Wizard extends React.Component<WizardProps, WizardState> {
-  static Page = ({ children, nextStep, prevStep }: PageProps) => children(nextStep, prevStep);
+class Wizard extends React.Component<WizardProps, WizardReactState> {
+  static Page = ({ children, nextStep, prevStep, wizardState }: PageProps) =>
+    children(nextStep, prevStep, wizardState);
 
   state = {
-    currentPage: 0
+    currentPage: 0,
+    wizardState: {}
   };
 
-  nextStep = (): void => {
+  nextStep = (newState: object = {}): void => {
     const { children } = this.props;
-    const { currentPage } = this.state;
+    const { currentPage, wizardState } = this.state;
 
     if (currentPage < children.length - 1) {
-      this.setState({ currentPage: currentPage + 1 });
+      this.setState({ currentPage: currentPage + 1, wizardState: { ...wizardState, ...newState } });
     }
   };
 
@@ -52,7 +60,8 @@ class Wizard extends React.Component<WizardProps, WizardState> {
   renderStep(step: PageType): React.ReactNode {
     return React.cloneElement(step, {
       nextStep: this.nextStep,
-      prevStep: this.prevStep
+      prevStep: this.prevStep,
+      wizardState: this.state.wizardState
     });
   }
 

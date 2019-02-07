@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FormEvent } from 'react';
 import gql from 'graphql-tag';
 import { ChildDataProps, graphql } from 'react-apollo';
 import cn from 'classnames';
@@ -17,7 +17,7 @@ const query = gql`
 `;
 
 type ValidName = {
-  available: Boolean;
+  available: boolean;
   slug: string;
 };
 
@@ -31,15 +31,25 @@ type Variables = {
 
 type InputProps = {
   name: string;
-  available?: Boolean;
+  hasError: boolean;
+  available?: boolean;
   slug?: string;
+  onClaim: (slug: string) => void;
 };
 
 type ChildProps = ChildDataProps<InputProps, Response, Variables>;
 
-function NameStatus({ available, slug, name }: ChildProps) {
+function NameStatus({ available, slug, name, hasError, onClaim }: ChildProps) {
   if (!name) {
     return <div className={styles.nameStatus} />;
+  }
+
+  if (hasError) {
+    return (
+      <div className={cn(styles.nameStatus, styles.show)}>
+        <p>This isn't a valid name.</p>
+      </div>
+    );
   }
 
   return (
@@ -54,7 +64,9 @@ function NameStatus({ available, slug, name }: ChildProps) {
           ? `${slug}.is.actually.lgbt is available.`
           : `${slug}.is.actually.lgbt has already been taken.`}
       </p>
-      <button className={styles.claimButton}>Gimme!</button>
+      <button className={styles.claimButton} onClick={() => onClaim(slug)}>
+        Gimme!
+      </button>
     </div>
   );
 }
@@ -73,8 +85,8 @@ export default graphql<InputProps, Response, Variables, ChildProps>(query, {
   props({ data, ownProps }) {
     const { validateName } = data;
     return {
+      ...ownProps,
       data,
-      name: ownProps.name,
       available: validateName ? validateName.available : false,
       slug: validateName ? validateName.slug : ''
     };
