@@ -1,5 +1,41 @@
+@import '../../../styles/base/media.css';
+
 .registerStep {
   grid-row-start: 2;
   grid-column-start: 1;
   grid-column-end: 4;
+  margin: 0 1.5em;
+
+  @media (--tablet-portrait-and-up) {
+    grid-column-start: 2;
+    grid-column-end: 3;
+  }
+
+  & form {
+    margin-top: 1em;
+
+    & .formField {
+      font-size: 1.5em;
+      display: flex;
+      flex-direction: column;
+    }
+
+    & .formField + .formField {
+      margin-top: 0.5em;
+    }
+
+    & button {
+      font-size: 1.8em;
+      margin-top: 1em;
+      width: 100%;
+    }
+  }
+
+  & .domain {
+    font-size: var(--ms2);
+
+    @media (--tablet-portrait-and-up) {
+      font-size: var(--ms4);
+    }
+  }
 }

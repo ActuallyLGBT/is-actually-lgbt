@@ -24,6 +24,7 @@ type PageType = React.ReactElement<PageProps>;
 interface WizardProps {
   children?: PageType[];
   className?: string;
+  freezeStep?: number;
 }
 
 interface WizardReactState {
@@ -66,14 +67,15 @@ class Wizard extends React.Component<WizardProps, WizardReactState> {
   }
 
   render(): React.ReactNode {
-    const { children: steps, className } = this.props;
+    const { children: steps, className, freezeStep } = this.props;
     const { currentPage } = this.state;
+    const pageIndex = freezeStep || currentPage;
 
     if (steps.length < 2) {
       throw new Error('Two or more steps required');
     }
 
-    return <div className={className}>{this.renderStep(steps[currentPage])}</div>;
+    return <div className={className}>{this.renderStep(steps[pageIndex])}</div>;
   }
 }
 

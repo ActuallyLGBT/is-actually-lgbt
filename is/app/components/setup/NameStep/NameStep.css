@@ -1,20 +1,23 @@
+@import '../../../styles/base/media.css';
+
 .nameStep {
   grid-column-start: 1;
-  grid-row-start: 2;
   grid-column-end: 4;
+  grid-row-start: 2;
   display: flex;
   flex-flow: column;
   justify-content: center;
   align-items: center;
-  margin-top: 3em;
+  margin: 3em 1.5em 0 1.5em;
+
+  @media (--tablet-portrait-and-up) {
+    & {
+      grid-column-start: 2;
+      grid-column-end: 3;
+    }
+  }
 
   & .claimButton {
-    background: var(--color-bluebird);
-    color: var(--color-white);
-    border: 1px solid var(--color-white);
-    padding: 0.5em 1em;
-    text-align: center;
-    border-radius: 8px;
     font-size: 2em;
   }
 

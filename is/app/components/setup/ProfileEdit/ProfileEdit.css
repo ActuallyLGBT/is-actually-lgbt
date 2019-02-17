@@ -1,2 +1,73 @@
 .profileEdit {
+  grid-column-start: 1;
+  grid-column-end: 4;
+  grid-row-start: 1;
+
+  & input {
+    font-size: 0.7em;
+    padding: 0.3em 0 0.3em 0.3em;
+    width: 100%;
+  }
+
+  & footer {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: flex-end;
+    background: var(--color-bluebird);
+    padding: 0.5em 1em;
+
+    & button {
+      background: var(--color-white);
+      border: 1px solid var(--color-bluebird);
+      color: var(--color-bluebird);
+    }
+  }
+
+  & input[type='checkbox']:checked,
+  & input[type='checkbox']:not(:checked) {
+    position: absolute;
+    left: -9999px;
+  }
+
+  & input[type='checkbox']:checked + label {
+    font-weight: 700;
+    opacity: 1;
+  }
+
+  & input[type='checkbox']:not(:checked) + label {
+    opacity: 0.2;
+  }
+
+  & .letters {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-evenly;
+    width: 100%;
+
+    & label[for='l'] {
+      color: var(--color-red);
+    }
+    & label[for='g'] {
+      color: var(--color-orange);
+    }
+    & label[for='b'] {
+      color: var(--color-yellow);
+    }
+    & label[for='t'] {
+      color: var(--color-green);
+    }
+    & label[for='qr'] {
+      color: var(--color-blue);
+    }
+    & label[for='qs'] {
+      color: var(--color-teal);
+    }
+    & label[for='i'] {
+      color: var(--color-purple);
+    }
+    & label[for='a'] {
+      color: var(--color-pink);
+    }
+  }
 }

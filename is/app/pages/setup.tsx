@@ -16,7 +16,7 @@ class Setup extends React.Component {
   render(): React.ReactNode {
     return (
       <MainLayout>
-        <Wizard className={styles.setup}>
+        <Wizard className={styles.setup} freezeStep={2}>
           <Wizard.Page>
             {(nextStep, prevStep) => <NameStep nextStep={nextStep} prevStep={prevStep} />}
           </Wizard.Page>

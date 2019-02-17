@@ -34,23 +34,36 @@ class RegisterStep extends React.Component<RegisterStepProps, RegisterStepState>
     }
   };
 
+  onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    this.props.nextStep({});
+  };
+
   render(): React.ReactNode {
     const { email, password } = this.state;
 
     const {
-      wizardState: { slug }
+      wizardState: { slug = 'foobar' }
     } = this.props;
 
     return (
       <div className={styles.registerStep}>
-        <h2>{`Claim ${slug}.is.actually.lgbt`}</h2>
-        <form>
+        <h2>Claim this domain?</h2>
+        <span className={styles.domain}>{`${slug}.is.actually.lgbt`}</span>
+        <form onSubmit={this.onSubmit}>
           <fieldset>
-            <label htmlFor="email">Email</label>
-            <input onChange={this.onChange} name="email" value={email} />
-            <label htmlFor="password">Password</label>
-            <input onChange={this.onChange} name="password" value={password} type="password" />
+            <div className={styles.formField}>
+              <label htmlFor="email">Email</label>
+              <input onChange={this.onChange} name="email" value={email} />
+            </div>
+            <div className={styles.formField}>
+              <label htmlFor="password">Password</label>
+              <input onChange={this.onChange} name="password" value={password} type="password" />
+            </div>
           </fieldset>
+
+          <button type="submit">Sign up</button>
         </form>
       </div>
     );

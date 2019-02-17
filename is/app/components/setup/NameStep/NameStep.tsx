@@ -23,6 +23,14 @@ class NameStep extends React.Component<NameStepProps, NameStepState> {
     hasError: false
   };
 
+  setQuery = query => this.setState({ query });
+
+  debounceSetQuery = debounce(400, this.setQuery);
+
+  onClaim = (slug: string) => {
+    this.props.nextStep({ slug });
+  };
+
   onNameChange = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
     const validNameRegex = new RegExp(/^([^!-@[-`{-~][^!-+/-@[-`{-~]*)?$/, 'gi');
@@ -37,20 +45,12 @@ class NameStep extends React.Component<NameStepProps, NameStepState> {
     });
   };
 
-  setQuery = query => this.setState({ query });
-
-  debounceSetQuery = debounce(400, this.setQuery);
-
-  onClaim = (slug: string) => {
-    this.props.nextStep({ slug });
-  };
-
   render(): React.ReactNode {
     const { nameValue, query, hasError } = this.state;
 
     return (
       <div className={styles.nameStep}>
-        <form>
+        <form onSubmit={e => e.preventDefault()}>
           <fieldset>
             <label htmlFor="name">What's your name?</label>
             <input onChange={this.onNameChange} name="name" value={nameValue} />

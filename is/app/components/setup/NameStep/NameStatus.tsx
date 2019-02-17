@@ -40,7 +40,7 @@ type InputProps = {
 type ChildProps = ChildDataProps<InputProps, Response, Variables>;
 
 function NameStatus({ available, slug, name, hasError, onClaim }: ChildProps) {
-  if (!name) {
+  if (!name && !hasError) {
     return <div className={styles.nameStatus} />;
   }
 
@@ -64,7 +64,7 @@ function NameStatus({ available, slug, name, hasError, onClaim }: ChildProps) {
           ? `${slug}.is.actually.lgbt is available.`
           : `${slug}.is.actually.lgbt has already been taken.`}
       </p>
-      <button className={styles.claimButton} onClick={() => onClaim(slug)}>
+      <button className={styles.claimButton} onClick={() => onClaim(slug)} type="submit">
         Gimme!
       </button>
     </div>
