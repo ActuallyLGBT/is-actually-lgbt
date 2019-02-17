@@ -8,6 +8,8 @@ import mdFooter from 'markdown-it-footnote';
 import hljs from 'highlight.js';
 import cn from 'classnames';
 
+import PronounPicker from '../../PronounPicker';
+
 const styles = require('./ProfileEdit.css');
 const stdStyles = require('../../ProfilePage/ProfilePage.css');
 const testMd = require('../../../test.md');
@@ -84,9 +86,7 @@ class ProfileEdit extends React.Component<ProfileEditProps, {}> {
               </div>
             </h1>
             <div className={stdStyles.details}>
-              <span className={stdStyles.pronounLine}>
-                Their pronouns are <span className={stdStyles.pronouns}>They/Them</span>
-              </span>
+              <PronounPicker />
               <div className={stdStyles.social}>
                 <span>You can find them here:</span>
                 <ul className={stdStyles.socialLinks}>

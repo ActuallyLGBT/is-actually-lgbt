@@ -81,29 +81,6 @@ main {
       }
     }
 
-    & .pronounLine {
-      font-size: var(--ms3);
-      margin-bottom: 1rem;
-      @mixin futura-pt-book-oblique;
-
-      @media (--phone-landscape-and-up) {
-        font-size: var(--ms2);
-        margin-bottom: 0;
-      }
-
-      @media (--tablet-portrait-and-up) {
-        font-size: var(--ms3);
-      }
-
-      @media (--large-desktop-and-up) {
-        font-size: var(--ms6);
-      }
-
-      & .pronouns {
-        color: var(--color-gray-light);
-      }
-    }
-
     & .social {
       display: flex;
       flex-flow: column;
