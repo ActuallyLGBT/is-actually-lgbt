@@ -10,6 +10,11 @@ const PageSpec = {
       index: true,
     },
 
+    ownerId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Account',
+    },
+
     name: {
       type: String,
     },
