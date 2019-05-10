@@ -2,13 +2,17 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
+import * as Passport from 'passport'
 import * as Promise from 'bluebird';
 import * as R from 'ramda';
 import * as routes from './routes';
 import nextapp from './nextapp';
 import { ApolloServer, gql } from 'apollo-server-express';
+import * as Controllers from './controllers'
+import Services from './services'
 import DbManager from './db'
-import { IServer, IDbManager } from './lib'
+import { IServer, IController, IDbManager } from './lib'
+import { TypedCollection } from './utils'
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
@@ -154,6 +158,9 @@ class Server implements IServer {
 
   // _api: ApiManager
   _db: DbManager
+  _ctrls: TypedCollection<string, IController>
+  _services: Services
+  _config: any
 
   constructor () {
     let options = {
@@ -162,7 +169,34 @@ class Server implements IServer {
       }
     }
 
+    this._config = {
+      baseUrl: 'http://localhost:3000',
+      passport: {
+        strategies: {
+          // google: {
+          //   name: 'Google',
+          //   protocol: 'oauth2',
+          //   strategy: require('passport-google-oauth2').Strategy,
+          //   scope: ['email'],
+          //   options: {
+          //     clientID: '',
+          //     clientSecret: ''
+          //   }
+          // }
+        }
+      }
+    }
+
     this._db = new DbManager(this, options)
+
+    this._ctrls = new TypedCollection<string, IController>()
+
+    this._services = new Services(this)
+
+    for (const key in Controllers) {
+      const ctrl: IController = new Controllers[key](this)
+      this._ctrls.set(key, ctrl)
+    }
 
   }
 
@@ -170,11 +204,24 @@ class Server implements IServer {
     return this._db
   }
 
+  get controllers (): IController[] {
+    return this._ctrls.toArray()
+  }
+
+  get services (): Services {
+    return this._services
+  }
+
+  get config (): any {
+    return this._config
+  }
+
   /**
    * Runs the server
    * @returns {Promise}
    */
   run (): Promise<any> {
+    const self = this
     return this.db.run()
       .then(() => {
         const gqlServer = new ApolloServer({ typeDefs, resolvers });
@@ -186,6 +233,12 @@ class Server implements IServer {
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(cookieParser());
+        app.use(Passport.initialize());
+        app.use(Passport.session());
+
+        for (const ctrl of self.controllers) {
+          ctrl.registerRoutes(app)
+        }
 
         app.use('/api', routes.api);
         app.use('/', routes.app);
