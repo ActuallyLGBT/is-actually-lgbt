@@ -16,7 +16,7 @@ export class TokenService extends BasicService {
       expirey: '7d',
       maxAge: '8d',
 
-      secret: 'supersecret',
+      secret: this.server.config.auth.jwtSecret,
     }
   }
 

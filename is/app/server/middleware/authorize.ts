@@ -3,18 +3,21 @@ import * as R from 'ramda'
 
 export function authorization (server: IServer) {
   return function authorizationMiddleware (req, res, next) {
-    const cookies = req.cookies
-    if (!R.has(server.config.auth.cookieName, cookies)) {
+    if (!R.has(server.config.auth.cookieName, req.cookies)) {
       return next()
     }
 
-    const token = cookies[server.config.auth.cookieName]
+    const token = req.cookies[server.config.auth.cookieName]
 
     return server.services.token.verify(token)
     .then(tokenAccount => {
       return server.services.account.loginById(req, tokenAccount._id)
+      .then(data => next(null, data))
     })
-    .then(data => next(null, data))
+    .catch({ name: 'JsonWebTokenError' }, _ => {
+      res.clearCookie(server.config.auth.cookieName)
+      next(null, null)
+    })
     .catch(err => {
       res.status(500).send(err)
     })

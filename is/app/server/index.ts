@@ -13,6 +13,7 @@ import * as middleware from './middleware'
 import { Services } from './services'
 import { DbManager } from './db'
 import { IServer, IDbManager, Initializable } from './lib'
+import * as config from '../server.config'
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000
 
@@ -167,37 +168,7 @@ class Server implements IServer {
       }
     }
 
-    this._config = {
-      baseUrl: 'http://localhost:3000',
-      auth: {
-        cookieName: 'act',
-      },
-      passport: {
-        strategies: {
-
-          google: {
-            name: 'Google',
-            protocol: 'oauth2',
-            strategy: require('passport-google-oauth2').Strategy,
-            scope: ['email'],
-            options: {
-              clientID: '',
-              clientSecret: ''
-            }
-          },
-
-          // facebook: {
-          //   name: 'Facebook',
-          //   protocol: 'oauth2',
-          //   strategy: require('passport-facebook').Strategy,
-          //   options: {
-          //     clientID: '',
-          //     clientSecret: ''
-          //   }
-          // }
-        }
-      }
-    }
+    this._config = config
 
     this._db = new DbManager(options)
 
