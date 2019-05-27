@@ -24,7 +24,7 @@ class TypedCollection<K, V> extends Map<K,V> {
    * @arg {function} func filter function
    * @returns {Array} Array of filtered values
    */
-  filter (args) {
+  filter (args): V[] {
     return this.toArray().filter(args)
   }
 
@@ -86,7 +86,7 @@ class TypedCollection<K, V> extends Map<K,V> {
    * Get unique values
    * @returns {Array} unique Array of unique values
    */
-  unique () {
+  unique (): V[] {
     return [...new Set(this.toArray())]
   }
 }

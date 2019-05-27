@@ -7,6 +7,6 @@ export function openid (server: IServer) {
       protocol: 'openid'
     }
 
-    server.services.passport.connect(req, query, profile, next)
+    server.services.passport.login(req, query, profile, next)
   }
 }

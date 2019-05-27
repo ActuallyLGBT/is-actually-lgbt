@@ -1,36 +1,36 @@
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import * as compression from 'compression';
-import * as cookieParser from 'cookie-parser';
+import * as express from 'express'
+import * as bodyParser from 'body-parser'
+import * as compression from 'compression'
+import * as cookieParser from 'cookie-parser'
 import * as Passport from 'passport'
-import * as Promise from 'bluebird';
-import * as R from 'ramda';
-import * as routes from './routes';
-import nextapp from './nextapp';
-import { ApolloServer, gql } from 'apollo-server-express';
-import * as Controllers from './controllers'
-import Services from './services'
-import DbManager from './db'
-import { IServer, IController, IDbManager } from './lib'
-import { TypedCollection } from './utils'
+import * as Promise from 'bluebird'
+import * as R from 'ramda'
+import * as routes from './routes'
+import nextapp from './nextapp'
+import { ApolloServer, gql } from 'apollo-server-express'
+import * as controllers from './controllers'
+import * as middleware from './middleware'
+import { Services } from './services'
+import { DbManager } from './db'
+import { IServer, IDbManager, Initializable } from './lib'
 
-const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3000
 
 interface ValidNameData {
-  available: Boolean;
-  slug: String;
+  available: Boolean
+  slug: String
 }
 
 interface PronounData {
-  objective: String[];
-  subjective: String[];
+  objective: String[]
+  subjective: String[]
 }
 
 interface LinkType {
-  name: String;
-  icon: String;
-  attribute: String;
-  template: String;
+  name: String
+  icon: String
+  attribute: String
+  template: String
 }
 
 const typeDefs = gql`
@@ -94,12 +94,12 @@ const typeDefs = gql`
   type Mutation {
     createPage(user: UserData!, page: PageInput!): PageData
   }
-`;
+`
 
 const resolvers = {
   Mutation: {
     createPage(_, args) {
-      return { pageId: '123abc', ...args.page };
+      return { pageId: '123abc', ...args.page }
     }
   },
   Query: {
@@ -152,15 +152,13 @@ const resolvers = {
         )
     }
   }
-};
+}
 
 class Server implements IServer {
 
-  // _api: ApiManager
-  _db: DbManager
-  _ctrls: TypedCollection<string, IController>
-  _services: Services
-  _config: any
+  private _config: any
+  private _db: DbManager
+  private _services: Services
 
   constructor () {
     let options = {
@@ -171,13 +169,27 @@ class Server implements IServer {
 
     this._config = {
       baseUrl: 'http://localhost:3000',
+      auth: {
+        cookieName: 'act',
+      },
       passport: {
         strategies: {
-          // google: {
-          //   name: 'Google',
+
+          google: {
+            name: 'Google',
+            protocol: 'oauth2',
+            strategy: require('passport-google-oauth2').Strategy,
+            scope: ['email'],
+            options: {
+              clientID: '',
+              clientSecret: ''
+            }
+          },
+
+          // facebook: {
+          //   name: 'Facebook',
           //   protocol: 'oauth2',
-          //   strategy: require('passport-google-oauth2').Strategy,
-          //   scope: ['email'],
+          //   strategy: require('passport-facebook').Strategy,
           //   options: {
           //     clientID: '',
           //     clientSecret: ''
@@ -187,32 +199,21 @@ class Server implements IServer {
       }
     }
 
-    this._db = new DbManager(this, options)
-
-    this._ctrls = new TypedCollection<string, IController>()
+    this._db = new DbManager(options)
 
     this._services = new Services(this)
 
-    for (const key in Controllers) {
-      const ctrl: IController = new Controllers[key](this)
-      this._ctrls.set(key, ctrl)
-    }
-
   }
 
-  get db (): IDbManager {
+  public get db (): IDbManager {
     return this._db
   }
 
-  get controllers (): IController[] {
-    return this._ctrls.toArray()
-  }
-
-  get services (): Services {
+  public get services (): Services {
     return this._services
   }
 
-  get config (): any {
+  public get config (): any {
     return this._config
   }
 
@@ -220,35 +221,36 @@ class Server implements IServer {
    * Runs the server
    * @returns {Promise}
    */
-  run (): Promise<any> {
+  public run (): Promise<any> {
     const self = this
-    return this.db.run()
-      .then(() => {
-        const gqlServer = new ApolloServer({ typeDefs, resolvers });
+    return self.db.run()
+    .then(_ => {
+      const gqlServer = new ApolloServer({ typeDefs, resolvers })
 
-        const app = express();
-        gqlServer.applyMiddleware({ app });
+      const app = express()
 
-        app.use(compression());
-        app.use(bodyParser.json());
-        app.use(bodyParser.urlencoded({ extended: true }));
-        app.use(cookieParser());
-        app.use(Passport.initialize());
-        app.use(Passport.session());
+      gqlServer.applyMiddleware({ app })
 
-        for (const ctrl of self.controllers) {
-          ctrl.registerRoutes(app)
-        }
+      app.use(compression())
+      app.use(bodyParser.json())
+      app.use(bodyParser.urlencoded({ extended: true }))
+      app.use(cookieParser())
+      app.use(middleware.authorization(self))
+      app.use(Passport.initialize())
 
-        app.use('/api', routes.api);
-        app.use('/', routes.app);
+      for (const key in controllers) {
+        const ctrl: Initializable = new controllers[key](self)
+        ctrl.init(app)
+      }
 
-        return nextapp.prepare()
-          .then(() => {
-            app.listen(port);
-            console.log(`🚀 Server ready at http://localhost:${port}${gqlServer.graphqlPath}`);
-          })
+      app.use('/', routes.app)
+
+      return nextapp.prepare()
+      .then(_ => {
+        app.listen(port)
+        console.log(`🚀 Server ready at http://localhost:${port}${gqlServer.graphqlPath}`)
       })
+    })
   }
 }
 

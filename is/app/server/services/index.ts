@@ -1,16 +1,26 @@
 import { IServer } from '../lib'
 
-import AuthService from './auth'
-import PassportService from './passport'
+import { AccountService } from './account'
+import { AuthService } from './auth'
+import { PassportService } from './passport'
+import { TokenService } from './token'
 
-export default class Services {
+export class Services {
 
-  _auth: AuthService
-  _passport: PassportService
+  private _account: AccountService
+  private _auth: AuthService
+  private _passport: PassportService
+  private _token: TokenService
 
   constructor (server: IServer) {
+    this._account = new AccountService(server)
     this._auth = new AuthService(server)
     this._passport = new PassportService(server)
+    this._token = new TokenService(server)
+  }
+
+  get account (): AccountService {
+    return this._account
   }
 
   get auth (): AuthService {
@@ -19,5 +29,9 @@ export default class Services {
 
   get passport (): PassportService {
     return this._passport
+  }
+
+  get token (): TokenService {
+    return this._token
   }
 }
