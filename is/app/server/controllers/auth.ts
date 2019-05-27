@@ -23,7 +23,7 @@ export class AuthController extends BasicController {
     .then(this.server.services.token.issue)
     .then(token => {
       res.cookie(this.server.config.auth.cookieName, token)
-      res.status(200).send('ok')
+      res.sendStatus(200)
     })
     .catch(err => {
       res.status(403).send(err)
