@@ -14,6 +14,6 @@ export function oauth (server: IServer) {
       query.tokens['tokenSecret'] = tokenSecret
     }
 
-    server.services.passport.connect(req, query, profile, next)
+    server.services.passport.login(req, query, profile, next)
   }
 }

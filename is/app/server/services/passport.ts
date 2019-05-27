@@ -1,36 +1,23 @@
-import { IServer } from '../lib'
-import * as PassportLib from 'passport'
+import { BasicService } from '../lib'
 import * as protocols from './protocols'
+import * as Promise from 'bluebird'
+import * as PassportLib from 'passport'
 import * as R from 'ramda'
 import * as ld from 'lodash'
 import * as path from 'path'
 import * as url from 'url'
 
-export default class PassportService {
+export class PassportService extends BasicService {
 
-  _server: IServer
-  _passportLib: PassportLib
-  _strats: any
+  private _passportLib: PassportLib
+  private _strats: any
 
-  constructor (server: IServer) {
-    this._server = server
+  public init (): void {
     this._passportLib = PassportLib
 
-    this._passportLib.serializeUser((user, next) => {
-      return next(null, user['_id'])
-    })
+    let baseUrl = this.server.config.baseUrl
 
-    this._passportLib.deserializeUser((id, next) =>  {
-      return this._server.db.get('Account').findById(id)
-      .then(user => {
-        next(null, user || null)
-        return user
-      })
-      .catch(next)
-    })
-
-    let baseUrl = this._server.config.baseUrl
-    this._strats = this._server.config.passport.strategies
+    this._strats = this.server.config.passport.strategies
 
     R.forEach(key => {
       let options = { passReqToCallback: true }
@@ -63,14 +50,15 @@ export default class PassportService {
 
         ld.extend(options, this._strats[key].options)
 
-        let wrappedProtocol = protocols[protocol](this._server)
+        let wrappedProtocol = protocols[protocol](this.server)
 
         this._passportLib.use(new Strategy(options, wrappedProtocol))
       }
     }, R.keys(this._strats))
   }
 
-  public connect = (req, query, profile, next, isSub = false) => {
+  // Do a login flow initiated by a passport (social login) connection
+  public login = (req, query, profile, next) => {
     let provider = profile.provider || req.param('provider')
 
     query['provider'] = provider
@@ -79,72 +67,116 @@ export default class PassportService {
       return next(new Error('No authentication provider was identified.'))
     }
 
-    this._server.db.get('Passport').findOne({
-      provider,
+    // Look for a passport entry with the provided identifier in the query, and
+    // the provider specified.
+    return this.model('Passport').findOne({
+      provider: provider,
       identifier: query.identifier
-    }).then(pp => {
-      if (!req.user) {
-        if (!pp) {
-          let user = {}
+    })
+    .then(pp => {
 
-          if (profile.email) {
-            user['email'] = profile.email
-          } else if (profile.emails && profile.emails[0]) {
-            user['email'] = profile.emails[0]
-          }
+      // let promise: Promise<any>
+      let email
+      if (profile.email) {
+        email = profile.email
+      } else if (profile.emails && profile.emails[0]) {
+        email = profile.emails[0]
+      }
 
-          if (!user['email']) {
+      // If we didn't find a passport, then we need to check for an account via email and link them.
+      if (!pp) {
+        if (!email) {
+          return Promise.reject(new Error('No email was available'))
+        }
+
+        return this.server.services.account.loginByEmail(req, email)
+        .catch({ error: 'E_ACCOUNT_NOT_FOUND' }, _ => {
+          // Create the account
+          return this.server.services.account.create(email)
+        })
+        .then(account => {
+          return this.model('Passport').create(ld.extend({ accountId: account['_id'] }, query))
+          .return(account)
+        })
+      } else {
+        // If we did find a passport, just log us in via the id.
+        return this.server.services.account.loginById(req, pp.accountId)
+        .catch({ error: 'E_ACCOUNT_NOT_FOUND' }, _ => {
+          // If we don't get an account from login, try to create it.
+          if (!email) {
             return Promise.reject(new Error('No email was available'))
           }
 
-          return this._server.db.get('Account').create(user)
-          .then(user2 => {
-            user = user2
-            return this._server.db.get('Passport').create(ld.extend({ account: user['_id'] }, query))
+          // Create the account
+          return this.server.services.account.create(email)
+          .then(account => {
+            pp.accountId = account._id
+            return pp.save()
+            .return(account)
           })
-          .then(_ => {
-            return next(null, user)
-          })
-        } else {
-          if (R.has('tokens', query) && query['tokens'] !== pp['tokens']) {
-            pp['tokens'] = query['tokens']
-          }
-
-          return pp.save().then(_ => {
-            return this._server.db.get('Account').findById(pp['account'])
-            .then(user2 => {
-              if (!user2) {
-                if (isSub) {
-                  return Promise.reject(new Error('Passport exists but user does not. Could not solve'))
-                }
-                return this._server.db.get('Passport').deleteOne({_id: pp['_id']})
-                .then(_ => {
-                  return this.connect(req, query, profile, next, true)
-                })
-              }
-
-              return user2
-            })
-          })
-          .then(user2 => {
-            return next(null, user2)
-          })
-        }
-      } else {
-        if (!pp) {
-          return this._server.db.get('Passport').create(ld.extend({ account: req.user._id }, query))
-          .then(_ => {
-            return next(null, req.user)
-          })
-        } else {
-          return next(null, req.user)
-        }
+        })
       }
     })
-    .catch(next)
+    .then(account => {
+      if (!req.account) {
+        return this.server.services.account.loginById(req, account['_id'])
+      }
+      return account
+    })
+    .then(account => next(null, account), next)
   }
 
-  public endpoint = (req, res) => {
+  // Connect a passport entry (social login) to an existing account.
+  public connect = (req, query, profile, next): Promise<any> => {
+
+    // If we don't have an account in the request, throw an error. We don't want to
+    // worry about that logic in this flow.
+    if (!req.account) {
+      return next(new Error('No account found in request. Is the user logged in?'))
+    }
+
+    let provider = profile.provider || req.param('provider')
+
+    // If we don't find a provider somewhere in the request, something went wrong and
+    // we must throw an error.
+    if (!provider) {
+      return next(new Error('No authentication provider was identified.'))
+    }
+
+    // Check to see if we already have a passport entry for this connection. If we do,
+    // Throw an error because we don't want to handle that in this flow.
+    return this.model('Passport').findOne({
+      provider: provider,
+      identifier: query.identifier
+    })
+    .then(pp => {
+      if (!!pp) {
+        return next(new Error('Passport is already connected to an account?'))
+      }
+
+      // If we got this far, that means we have an account and a social login to connect
+      // Lets do it.
+
+      // Add the provider to our query so we can match it later during lookups.
+      query['provider'] = provider
+
+      // Create the passport in the database,
+      return this.model('Passport').create(ld.extend({ accountId: req.account['_id'] }, query))
+    })
+  }
+
+  public disconnect = (req, _, next) => {
+    let provider = req.param('provider')
+    let account = req.account
+
+    return this.model('Passport').findOneAndDelete({
+      provider: provider,
+      accountId: account._id,
+    })
+    .then(ppDeleted => next(null, ppDeleted), next)
+  }
+
+  public action = (req, res, next) => {
     let strategies = this._strats
     let provider = req.param('provider')
     let options = {}
@@ -157,33 +189,23 @@ export default class PassportService {
       options['scope'] = strategies[provider].scope
     }
 
-    this._passportLib.authenticate(provider, options)(req, res, req.next)
+    this._passportLib.authenticate(provider, options)(req, res, next)
   }
 
-  public callback = (req, res, next) => {
+  public callback = (req, res): Promise<any> => {
     let provider = req.param('provider')
-    // let action = req.param('action')
 
-    // if (provider === 'local' && action !== undefined) {
-    //   if (action === 'register' && !req.user) {
-    //     this._protocols.local.register(req, res, next)
-    //   } else if (action === 'connect' && req.user) {
-    //     this._protocols.local.connect(req, res, next)
-    //   } else if (action === 'disconnect' && req.user) {
-    //     this._.protocols.local.disconnect(req, res, next)
-    //   } else {
-    //     return next(new Error('Invalid action'))
-    //   }
-    // } else {
-    //   if (action === 'disconnect' && req.user) {
-    //     this.disconnect(req, res, next)
-    //   } else {
-    //     // The provider will redirect the user to this URL after approval. Finish
-    //     // the authentication process by attempting to obtain an access token. If
-    //     // access was granted, the user will be logged in. Otherwise, authentication
-    //     // has failed.
-    this._passportLib.authenticate(provider, next)(req, res, req.next)
-    //  }
-    // }
+    if (!R.has(provider, this._strats)) {
+      return Promise.reject(new Error('provider not available'))
+    }
+
+    return new Promise((resolve, reject) => {
+      function next (err, data) {
+        if (err) { return reject(err) }
+        return resolve(data)
+      }
+
+      this._passportLib.authenticate(provider, next)(req, res, next)
+    })
   }
 }

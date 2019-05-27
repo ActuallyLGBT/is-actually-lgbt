@@ -15,6 +15,11 @@ export function oauth2 (server: IServer) {
       query.tokens['refreshToken'] = refreshToken
     }
 
-    server.services.passport.connect(req, query, profile, next)
+    // if (!req.account) {
+      server.services.passport.login(req, query, profile, next)
+    // } else {
+    //   server.services.passport.connect(req, query, profile, next)
+    // }
+
   }
 }

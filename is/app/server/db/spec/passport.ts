@@ -22,11 +22,15 @@ const PassportSpec = {
       default: {},
     },
 
-    account: {
+    accountId: {
       type: Schema.Types.ObjectId,
       ref: 'Account',
     },
   },
+
+  indexes: [
+    { keys: { account: 1, provider: 1 }, options: { unique: true } }
+  ]
 }
 
 export { PassportSpec }

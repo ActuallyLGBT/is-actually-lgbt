@@ -1,64 +1,45 @@
-import * as express from 'express'
-import { IServer, IController } from '../lib'
+import { Express, Router } from 'express'
+import { BasicController } from '../lib'
 
-export default class AuthController implements IController {
+export class AuthController extends BasicController {
 
-  _server: IServer
-  _router: express.Router
-  _registered: boolean
+  protected registerRoutes (app: Express, router: Router): void {
+    router.get('/whoami', this.whoami)
+    router.get('/logout', this.logout)
+    router.get('/:provider', this.action)
+    router.get('/:provider/callback', this.callback)
+    router.get('/:provider/disconnect', this.disconnect)
 
-  constructor (server: IServer) {
-    this._server = server
-    this._registered = false
+    app.use('/auth', router)
+    app.get('/logout', this.logout)
   }
 
-  public registerRoutes = (app: any) => {
-    if (this._registered) {
-      throw new Error('Auth Controller already registered its routes!')
-    }
-
-    this._router = express.Router()
-
-    this._router.get('/logout', this.logout)
-    this._router.get('/:provider', this._server.services.passport.endpoint)
-    this._router.get('/:provider/callback', this.providerCallback)
-    this._router.get('/:provider/:action', this.providerCallback)
-
-    app.use('/auth', this._router)
-
-    this._registered = true
+  public action = (req, res) => {
+    this.server.services.passport.action(req, res, req.next)
   }
 
-  public providerCallback = (req, res) => {
-    this._server.services.passport.callback(req, res, (err, user, info, _) => {
-      if (err || !user) {
-        if (!err && info) {
-          return res.status(403).send(info)
-        }
-        return res.status(403).send(err)
-      }
-
-      req.login(user, err => {
-        if (err) {
-          return res.status(403).send(err)
-        }
-
-        req.user = user
-
-        return res.json(200, user)
-      })
-
+  public callback = (req, res) => {
+    return this.server.services.passport.callback(req, res)
+    .then(this.server.services.token.issue)
+    .then(token => {
+      res.cookie(this.server.config.auth.cookieName, token)
+      res.status(200).send('ok')
+    })
+    .catch(err => {
+      res.status(403).send(err)
     })
   }
 
-  public logout = (req, res) => {
-    if (req.logout) {
-      req.logout()
-    }
+  public disconnect = (req, res) => {
+    this.server.services.passport.disconnect(req, res, req.next)
+  }
 
-    if (req.user) {
-      delete req.user
-    }
+  public whoami = (req, res) => {
+    res.status(200).json(req.account)
+  }
+
+  public logout = (req, res) => {
+    req.doLogout && req.doLogout()
 
     res.sendStatus(200)
   }

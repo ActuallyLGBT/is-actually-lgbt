@@ -1,11 +1,5 @@
-import { IServer } from '../lib'
+import { BasicService } from '../lib'
 
-export default class AuthService {
-
-  _server: IServer
-
-  constructor (server: IServer) {
-    this._server = server
-  }
+export class AuthService extends BasicService {
 
 }

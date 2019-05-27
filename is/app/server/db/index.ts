@@ -2,23 +2,21 @@ import * as Mongoose from 'mongoose'
 import * as Promise from 'bluebird'
 import * as SchemaSpecs from './spec'
 import { TypedCollection } from '../utils'
-import { IServer, IDbManager, ISchemaSpec } from '../lib'
+import { IDbManager, ISchemaSpec } from '../lib'
 
 Mongoose.Promise = Promise
 
-export default class DbManager extends TypedCollection<string, Mongoose.Model> implements IDbManager {
+export class DbManager extends TypedCollection<string, Mongoose.Model> implements IDbManager {
 
-  _server: IServer
-  _config: any
+  private _config: any
 
-  constructor (server: IServer, options = { mongo: { uri: '' } }) {
+  constructor (options = { mongo: { uri: '' } }) {
     super()
 
-    this._server = server
     this._config = options.mongo
   }
 
-  run (): Promise<any> {
+  public run (): Promise<any> {
     for (const key in SchemaSpecs) {
       this.registerModel(SchemaSpecs[key])
     }
@@ -26,7 +24,7 @@ export default class DbManager extends TypedCollection<string, Mongoose.Model> i
     return this.connect()
   }
 
-  connect (): Promise<null> {
+  public connect (): Promise<null> {
     return new Promise((resolve, _) => {
       Mongoose.connection.once('open', () => {
         console.log('Mongoose Connected')
@@ -42,7 +40,7 @@ export default class DbManager extends TypedCollection<string, Mongoose.Model> i
     })
   }
 
-  registerModel (spec: ISchemaSpec): IDbManager {
+  public registerModel (spec: ISchemaSpec): IDbManager {
     let name = spec.name
 
     if (this.has(name)) {
@@ -55,6 +53,12 @@ export default class DbManager extends TypedCollection<string, Mongoose.Model> i
     if (spec.virtuals) {
       for (const key in spec.virtuals) {
         schema.virtual(key, spec.virtuals[key])
+      }
+    }
+
+    if (spec.indexes) {
+      for (const index of spec.indexes) {
+        schema.index(index.keys, index.options || {})
       }
     }
 
