@@ -2,7 +2,7 @@ import { IServer } from '../lib'
 import * as R from 'ramda'
 
 export function authorization (server: IServer) {
-  return function authorizationMiddleware (req, res, next) {
+  return (req, res, next) => {
     if (!R.has(server.config.cookie.name, req.cookies)) {
       return next()
     }

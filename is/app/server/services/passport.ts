@@ -55,7 +55,7 @@ export class PassportService extends BasicService {
 
   // Do a login flow initiated by a passport (social login) connection
   public login = (req, query, profile, next) => {
-    let provider = profile.provider || req.params.provider || null
+    const provider = profile.provider || req.params.provider || null
 
     query['provider'] = provider
 
@@ -123,7 +123,7 @@ export class PassportService extends BasicService {
 
   public action = (req, res, next) => {
     let strategies = this._strats
-    let provider = req.params.provider || null
+    const provider = req.params.provider || null
     let options = {}
 
     if (!R.has(provider, strategies)) {
@@ -138,7 +138,7 @@ export class PassportService extends BasicService {
   }
 
   public callback = (req, res): Promise<any> => {
-    let provider = req.params.provider || null
+    const provider = req.params.provider || null
 
     if (!R.has(provider, this._strats)) {
       return Promise.reject(new Error('provider not available'))

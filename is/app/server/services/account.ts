@@ -18,7 +18,7 @@ export class AccountService extends BasicService {
     return Promise.resolve(req.account)
   }
 
-  public loginByEmail = (req, email) => {
+  public loginByEmail = (req, email: string) => {
     return this.model('Account').findOne({ email: email })
     .then(account => {
       if (!account) {
@@ -29,7 +29,7 @@ export class AccountService extends BasicService {
     })
   }
 
-  public loginById = (req, id) => {
+  public loginById = (req, id: string) => {
     return this.model('Account').findById(id)
     .then(account => {
       if (!account) {

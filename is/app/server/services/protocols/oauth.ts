@@ -1,7 +1,7 @@
 import { IServer } from '../../lib'
 
 export function oauth (server: IServer) {
-  return function oauthProtocol (req, _, __, profile, next) {
+  return (req, _, __, profile, next): void => {
     let query = {
       identifier: profile.id,
       protocol: 'oauth',
