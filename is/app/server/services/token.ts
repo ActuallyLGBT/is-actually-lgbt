@@ -16,7 +16,7 @@ export class TokenService extends BasicService {
       expirey: '7d',
       maxAge: '8d',
 
-      secret: this.server.config.auth.jwtSecret,
+      secret: this.server.config.jwt.secret,
     }
   }
 
@@ -35,7 +35,7 @@ export class TokenService extends BasicService {
         return resolve(data)
       }
 
-      jwt.sign({ data: account._id }, this._opts.secret, opts, next)
+      jwt.sign({ id: account._id }, this._opts.secret, opts, next)
     })
   }
 
@@ -52,7 +52,7 @@ export class TokenService extends BasicService {
     return new Promise((resolve, reject) => {
       function next (err, data) {
         if (err) { return reject(err) }
-        return resolve(data.data)
+        return resolve(data.id)
       }
 
       jwt.verify(token, this._opts.secret , opts, next)

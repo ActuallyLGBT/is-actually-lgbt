@@ -20,13 +20,18 @@ export class AuthController extends BasicController {
 
   public callback = (req, res) => {
     return this.server.services.passport.callback(req, res)
-    .then(this.server.services.token.issue)
+    .then(account => {
+      return this.server.services.token.issue(account)
+    })
     .then(token => {
-      res.cookie(this.server.config.auth.cookieName, token)
+      res.cookie(this.server.config.cookie.name, token, {
+        expires: new Date(Date.now() + this.server.config.cookie.expirey)
+      })
       res.sendStatus(200)
     })
     .catch(err => {
-      res.status(403).send(err)
+      res.status(500)
+      res.render('error', { error: err })
     })
   }
 
