@@ -1,10 +1,12 @@
 import * as express from 'express'
+import * as session from 'express-session'
 import * as bodyParser from 'body-parser'
 import * as compression from 'compression'
 import * as cookieParser from 'cookie-parser'
 import * as Passport from 'passport'
 import * as Promise from 'bluebird'
 import * as R from 'ramda'
+import * as path from 'path'
 import * as routes from './routes'
 import nextapp from './nextapp'
 import { ApolloServer, gql } from 'apollo-server-express'
@@ -202,11 +204,16 @@ class Server implements IServer {
 
       gqlServer.applyMiddleware({ app })
 
+      app.set('views', path.join(__dirname, 'views'))
+      app.set('view engine', 'ejs')
+      app.set('verbose errors', true)
+
       app.use(compression())
       app.use(bodyParser.json())
       app.use(bodyParser.urlencoded({ extended: true }))
       app.use(cookieParser())
       app.use(middleware.authorization(self))
+      app.use(session({ secret: self.config.session.secret }))
       app.use(Passport.initialize())
 
       for (const key in controllers) {
