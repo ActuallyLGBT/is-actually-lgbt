@@ -46,6 +46,7 @@
     "passport": "^0.4.0",
     "passport-google-oauth": "^2.0.0",
     "passport-google-oauth2": "^0.2.0",
+    "passport-twitter": "^1.0.4",
     "ramda": "^0.26.1",
     "react": "^16.8.6",
     "react-apollo": "^2.5.6",

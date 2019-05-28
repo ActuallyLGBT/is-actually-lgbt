@@ -83,6 +83,10 @@ export class PassportService extends BasicService {
         email = profile.emails[0]
       }
 
+      if (email.value) {
+        email = email.value
+      }
+
       // If we didn't find a passport, then we need to check for an account via email and link them.
       if (!pp) {
         if (!email) {

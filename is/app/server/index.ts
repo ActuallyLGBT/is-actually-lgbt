@@ -1,4 +1,5 @@
 import * as express from 'express'
+import * as session from 'express-session'
 import * as bodyParser from 'body-parser'
 import * as compression from 'compression'
 import * as cookieParser from 'cookie-parser'
@@ -207,6 +208,7 @@ class Server implements IServer {
       app.use(bodyParser.urlencoded({ extended: true }))
       app.use(cookieParser())
       app.use(middleware.authorization(self))
+      app.use(session({ secret: self.config.auth.sessionSecret }))
       app.use(Passport.initialize())
 
       for (const key in controllers) {
