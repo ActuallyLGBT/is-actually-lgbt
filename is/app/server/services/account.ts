@@ -39,6 +39,4 @@ export class AccountService extends BasicService {
       return this.doLogin(req, account)
     })
   }
-
-  // public logout = (req, cb)
 }

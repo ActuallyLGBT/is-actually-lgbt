@@ -17,10 +17,10 @@ const PassportSpec = {
       type: String,
     },
 
-    tokens: {
-      type: Object,
-      default: {},
-    },
+    // tokens: {
+    //   type: Object,
+    //   default: {},
+    // },
 
     accountId: {
       type: Schema.Types.ObjectId,
