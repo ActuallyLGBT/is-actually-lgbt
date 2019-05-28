@@ -1,7 +1,7 @@
 import { IServer } from '../../lib'
 
 export function openid (server: IServer) {
-  return function openidProtocol (req, identifier, profile, next) {
+  return (req, identifier, profile, next): void => {
     let query = {
       identifier: identifier,
       protocol: 'openid'

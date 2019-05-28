@@ -1,16 +1,15 @@
 import * as Mongoose from 'mongoose'
 import * as Promise from 'bluebird'
 import * as SchemaSpecs from './spec'
-import { TypedCollection } from '../utils'
 import { IDbManager, ISchemaSpec } from '../lib'
 
 Mongoose.Promise = Promise
 
-export class DbManager extends TypedCollection<string, Mongoose.Model> implements IDbManager {
+export class DbManager extends Map<string, Mongoose.Model> implements IDbManager {
 
   private _config: any
 
-  constructor (options = { mongo: { uri: '' } }) {
+  constructor (options: any = { mongo: { uri: '' } }) {
     super()
 
     this._config = options.mongo
@@ -63,7 +62,7 @@ export class DbManager extends TypedCollection<string, Mongoose.Model> implement
     }
 
     schema.static('findOneOrCreate', function findOneOrCreate (condition, doc) {
-      let opts = {
+      const opts = {
         new: true,
         upsert: true
       }

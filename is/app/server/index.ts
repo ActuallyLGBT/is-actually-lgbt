@@ -21,19 +21,19 @@ const port = process.env.PORT ? parseInt(process.env.PORT) : 3000
 
 interface ValidNameData {
   available: Boolean
-  slug: String
+  slug: string
 }
 
 interface PronounData {
-  objective: String[]
-  subjective: String[]
+  objective: string[]
+  subjective: string[]
 }
 
 interface LinkType {
-  name: String
-  icon: String
-  attribute: String
-  template: String
+  name: string
+  icon: string
+  attribute: string
+  template: string
 }
 
 const typeDefs = gql`
@@ -150,7 +150,7 @@ const resolvers = {
             'name',
             'icon',
             'attribute',
-            'template'
+            'template',
           ])
         )
     }
@@ -159,7 +159,7 @@ const resolvers = {
 
 class Server implements IServer {
 
-  private _config: any
+  private _config: config
   private _db: DbManager
   private _services: Services
 
@@ -186,7 +186,7 @@ class Server implements IServer {
     return this._services
   }
 
-  public get config (): any {
+  public get config (): config {
     return this._config
   }
 

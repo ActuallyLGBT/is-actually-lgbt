@@ -30,7 +30,7 @@ export class TokenService extends BasicService {
     }
 
     return new Promise((resolve, reject) => {
-      function next (err, data) {
+      function next (err, data): void {
         if (err) { return reject(err) }
         return resolve(data)
       }
@@ -50,7 +50,7 @@ export class TokenService extends BasicService {
     }
 
     return new Promise((resolve, reject) => {
-      function next (err, data) {
+      function next (err, data): void {
         if (err) { return reject(err) }
         return resolve(data.id)
       }

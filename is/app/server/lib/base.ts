@@ -14,7 +14,7 @@ export abstract class BaseObject {
 }
 
 export interface Initializable {
-  init (...args): void
+  init (...args: any): void
 }
 
 export interface IAccount {
