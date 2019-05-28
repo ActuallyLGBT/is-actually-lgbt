@@ -10,20 +10,20 @@ import * as url from 'url'
 export class PassportService extends BasicService {
 
   private _passportLib: PassportLib
-  private _strats: any
+  private _strats: object
 
   public init (): void {
     this._passportLib = PassportLib
 
-    let baseUrl = this.server.config.baseUrl
+    const baseUrl = this.server.config.baseUrl
 
     this._strats = this.server.config.passport.strategies
 
     R.forEach(key => {
-      let options = { passReqToCallback: true }
+      const options = { passReqToCallback: true }
       let Strategy
 
-      let protocol = this._strats[key].protocol
+      const protocol = this._strats[key].protocol
       let callback = this._strats[key].callback
 
       if (!callback) {
@@ -47,7 +47,7 @@ export class PassportService extends BasicService {
 
       ld.extend(options, this._strats[key].options)
 
-      let wrappedProtocol = protocols[protocol](this.server)
+      const wrappedProtocol = protocols[protocol](this.server)
 
       this._passportLib.use(new Strategy(options, wrappedProtocol))
     }, R.keys(this._strats))
@@ -66,8 +66,8 @@ export class PassportService extends BasicService {
     // Look for a passport entry with the provided identifier in the query, and
     // the provider specified.
     return this.model('Passport').findOne({
+      identifier: query.identifier,
       provider: provider,
-      identifier: query.identifier
     })
     .then(pp => {
 
@@ -122,9 +122,9 @@ export class PassportService extends BasicService {
   }
 
   public action = (req, res, next) => {
-    let strategies = this._strats
+    const strategies = this._strats
     const provider = req.params.provider || null
-    let options = {}
+    const options = {}
 
     if (!R.has(provider, strategies)) {
       return res.redirect('/login')
