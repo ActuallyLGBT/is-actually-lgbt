@@ -25,7 +25,7 @@ class NameStep extends React.Component<NameStepProps, NameStepState> {
 
   onNameChange = (event: FormEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
-    const validNameRegex = new RegExp(/^([^!-@[-`{-~][^!-+/-@[-`{-~]*)?$/, 'gi');
+    const validNameRegex = new RegExp(/^([a-z0-9][^\x00-\x1f!-+/:-@[-`{-\x7f]*)?$/, 'gi');
 
     this.setState({ nameValue: value }, () => {
       if (validNameRegex.test(value)) {
