@@ -16,7 +16,7 @@ export function authorization (server: IServer) {
     })
     .catch({ name: 'JsonWebTokenError' }, _ => {
       res.clearCookie(server.config.auth.cookieName)
-      next(null, null)
+      next()
     })
     .catch(err => {
       res.status(500).send(err)

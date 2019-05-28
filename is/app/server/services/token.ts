@@ -35,11 +35,11 @@ export class TokenService extends BasicService {
         return resolve(data)
       }
 
-      jwt.sign({ data: account }, this._opts.secret, opts, next)
+      jwt.sign({ data: account._id }, this._opts.secret, opts, next)
     })
   }
 
-  public verify = (token: string): Promise<IAccount> => {
+  public verify = (token: string): Promise<string> => {
     const opts = {
       algorithms: [ this._opts.algorithm ],
       issuer: this._opts.issuer,
