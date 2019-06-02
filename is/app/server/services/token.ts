@@ -8,13 +8,13 @@ export class TokenService extends BasicService {
 
   public init (): void {
     this._opts = {
-      algorithm: 'HS256',
-      issuer: 'is.actually.lgbt',
-      audience: 'is.actually.lgbt',
+      algorithm: this.server.config.jwt.algorithm,
+      issuer: this.server.config.jwt.issuer,
+      audience: this.server.config.jwt.audience,
       subject: 'Is Actually LGBT account',
       clockTolerance: 120,
-      expirey: '7d',
-      maxAge: '8d',
+      expirey: this.server.config.jwt.expirey,
+      maxAge: this.server.config.jwt.maxAge,
 
       secret: this.server.config.jwt.secret,
     }

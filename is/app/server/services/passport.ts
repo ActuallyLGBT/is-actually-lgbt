@@ -1,7 +1,7 @@
 import { BasicService } from '../lib'
 import * as protocols from './protocols'
 import * as Promise from 'bluebird'
-import * as PassportLib from 'passport'
+import * as passport from 'passport'
 import * as R from 'ramda'
 import * as ld from 'lodash'
 import * as path from 'path'
@@ -9,21 +9,18 @@ import * as url from 'url'
 
 export class PassportService extends BasicService {
 
-  private _passportLib: PassportLib
   private _strats: object
 
   public init (): void {
-    this._passportLib = PassportLib
-
     const baseUrl = this.server.config.baseUrl
 
     this._strats = this.server.config.passport.strategies
 
     R.forEach(key => {
       const options = { passReqToCallback: true }
-      let Strategy
-
       const protocol = this._strats[key].protocol
+
+      let Strategy
       let callback = this._strats[key].callback
 
       if (!callback) {
@@ -49,7 +46,7 @@ export class PassportService extends BasicService {
 
       const wrappedProtocol = protocols[protocol](this.server)
 
-      this._passportLib.use(new Strategy(options, wrappedProtocol))
+      passport.use(new Strategy(options, wrappedProtocol))
     }, R.keys(this._strats))
   }
 
@@ -134,7 +131,7 @@ export class PassportService extends BasicService {
       options['scope'] = strategies[provider].scope
     }
 
-    this._passportLib.authenticate(provider, options)(req, res, next)
+    passport.authenticate(provider, options)(req, res, next)
   }
 
   public callback = (req, res): Promise<any> => {
@@ -150,7 +147,7 @@ export class PassportService extends BasicService {
         return resolve(data)
       }
 
-      this._passportLib.authenticate(provider, next)(req, res, next)
+      passport.authenticate(provider, next)(req, res, next)
     })
   }
 }

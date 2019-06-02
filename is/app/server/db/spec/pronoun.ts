@@ -9,9 +9,12 @@ const PronounSpec = {
 
     text: {
       type: String,
-      unique: true
     }
-  }
+  },
+
+  indexes: [
+    { keys: { pronounType: 1, text: 1 }, options: { unique: true } }
+  ]
 }
 
 export { PronounSpec }

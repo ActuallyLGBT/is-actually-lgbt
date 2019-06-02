@@ -4,13 +4,13 @@ const PageSpec = {
   name: 'Page',
 
   schema: {
-    pageId: {
+    slug: {
       type: String,
       unique: true,
       index: true,
     },
 
-    ownerId: {
+    accountId: {
       type: Schema.Types.ObjectId,
       ref: 'Account',
     },
@@ -46,7 +46,7 @@ const PageSpec = {
   virtuals: {
     markdown: {
       ref: 'Markdown',
-      localField: 'pageId',
+      localField: '_id',
       foreignField: 'pageId',
       justOne: true,
     }

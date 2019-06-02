@@ -1,15 +1,17 @@
+import { Schema } from 'mongoose'
+
 const MarkdownSpec = {
   name: 'Markdown',
 
   schema: {
     pageId: {
-      type: String,
-      unique: true,
+      type: Schema.Types.ObjectId,
+      ref: 'Page',
       index: true,
     },
 
     data: {
-      type: String
+      type: Buffer
     },
   },
 
@@ -17,7 +19,7 @@ const MarkdownSpec = {
     page: {
       ref: 'Page',
       localField: 'pageId',
-      foreignField: 'pageId',
+      foreignField: '_id',
       justOne: true,
     }
   }

@@ -8,7 +8,6 @@ export class AuthController extends BasicController {
     router.get('/logout', this.logout)
     router.get('/:provider', this.action)
     router.get('/:provider/callback', this.callback)
-    // router.get('/:provider/disconnect', this.disconnect)
 
     app.use('/auth', router)
     app.get('/logout', this.logout)
@@ -34,10 +33,6 @@ export class AuthController extends BasicController {
       res.render('error', { error: err })
     })
   }
-
-  // public disconnect = (req, res) => {
-  //   this.server.services.passport.disconnect(req, res, req.next)
-  // }
 
   public whoami = (req, res) => {
     res.status(200).json(req.account)

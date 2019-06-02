@@ -17,11 +17,6 @@ const PassportSpec = {
       type: String,
     },
 
-    // tokens: {
-    //   type: Object,
-    //   default: {},
-    // },
-
     accountId: {
       type: Schema.Types.ObjectId,
       ref: 'Account',
@@ -29,7 +24,7 @@ const PassportSpec = {
   },
 
   indexes: [
-    { keys: { account: 1, provider: 1 }, options: { unique: true } }
+    { keys: { accountId: 1, provider: 1 }, options: { unique: true } }
   ]
 }
 

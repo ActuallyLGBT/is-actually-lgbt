@@ -13,7 +13,7 @@ const AccountSpec = {
     page: {
       ref: 'Page',
       localField: '_id',
-      foreignField: 'ownerId',
+      foreignField: 'accountId',
       justOne: true,
     }
   }
